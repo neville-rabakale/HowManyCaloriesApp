@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using HowManyCalories.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HowManyCalories.Data
@@ -9,5 +10,10 @@ namespace HowManyCalories.Data
             : base(options)
         {
         }
+
+        //Create dataTables
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<Week> Weeks { get; set; }
+
     }
 }
