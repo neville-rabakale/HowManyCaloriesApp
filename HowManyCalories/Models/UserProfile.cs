@@ -17,6 +17,8 @@ namespace HowManyCalories.Models
         [Display(Name = "Start Calories")]
         [Required]
         public int StartCalories { get; set; }
+        [Required]
+        public int Duration { get; set; }
 
 
     }

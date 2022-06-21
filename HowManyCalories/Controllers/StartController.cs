@@ -14,17 +14,22 @@ namespace HowManyCalories.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            UserProfile profile = new();
+            return View(profile);
         }
         [HttpPost]
-        public IActionResult PostIndex(UserProfile obj)
+        public IActionResult IndexPOST(UserProfile obj)
         {
-            //Add inputed userdata to Db and Save
-            _context.UserProfiles.Add(obj);
-            TempData["Success"] = "Start data created Successfully";
-            _context.SaveChanges();
-            //this should redirect to Action Index of week 1 Controller
-            return View();
+
+            if (ModelState.IsValid) {
+                //Add inputed userdata to Db and Save
+                _context.UserProfiles.Add(obj);
+                TempData["Success"] = "Start data created Successfully";
+                _context.SaveChanges();
+                return RedirectToAction("Week1", "Weeks");
+
+            }
+            return View(obj);
         }
 
     }

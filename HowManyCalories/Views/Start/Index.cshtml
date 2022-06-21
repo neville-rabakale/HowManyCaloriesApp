@@ -1,6 +1,7 @@
 ﻿@model UserProfile
 
 
+<form method="post" asp-action="IndexPost" enctype="multipart/form-data">
 
 <div class="row justify-content-center">
     <div class="col-10">
@@ -20,13 +21,28 @@
                 <span asp-validation-for="GoalWeight" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="StartCalories"></label>
+                <label>Current Maintanence Calories</label>
                 <input asp-for="StartCalories" class="form-control" />
                 <span asp-validation-for="StartCalories" class="text-danger"></span>
             </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary" style="width:150px">SUBMIT</button>
+            <div>
+                <label>Duration of Weight Loss</label>
+                <select asp-for="Duration" class="form-select">
+                    <option value="6">6 Weeks</option>
+                    <option value="8">8 Weeks</option>
+                    <option selected value="12">12 Weeks</option>
+                </select>
+            </div>
+            <div class="col-12 p-3">
+                <button type="submit" class="btn btn-primary" style="width:260px">SUBMIT</button>
             </div>
         </div>
     </div>
+    <div class="p-5 col-11" >
+        <label>Find your estimated maintenance calories below</label>
+        <br />
+        <br />
+        <a href="https://www.mayoclinic.org/healthy-lifestyle/weight-loss/in-depth/calorie-calculator/itt-20402304" class="btn btn-secondary" target="_blank">Maintanence Calculator</a>
+    </div>
 </div>
+</form>
