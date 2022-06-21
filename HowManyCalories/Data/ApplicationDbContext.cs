@@ -14,6 +14,7 @@ namespace HowManyCalories.Data
         //Create dataTables
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Week> Weeks { get; set; }
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
 
     }
 }

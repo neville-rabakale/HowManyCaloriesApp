@@ -1,8 +1,23 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model UserProfile
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
+<div class="row justify-content-center">
+    <div class="col-10">
+        <div class="border p-3 mt-4 row">
+            <div class="col-12 pb-2">
+                <h2 class="text-primary">How Many Calories</h2>
+                <hr />
+            </div>
+            <p class="col-12">
+                Welcome to How many Calories, the simple app which help you determin your daily caloric intake.
+                Week by week you will input 3 checkins of your weight which will tell us the your progress.
+                Depending on this your calories will be adjusted for you to reach your goals.
+                Good luck on your weight loss journey :) 
+            </p>
+			<a asp-controller="Start" asp-action="Index" class="btn btn-primary" style="width:150px">
+				Start Here
+			</a>
+        </div>
+    </div>
 </div>

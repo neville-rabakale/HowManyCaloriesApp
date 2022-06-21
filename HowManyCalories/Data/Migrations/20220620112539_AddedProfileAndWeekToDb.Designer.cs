@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HowManyCalories.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220618210918_AddedUserProfileAndWeekToDb")]
-    partial class AddedUserProfileAndWeekToDb
+    [Migration("20220620112539_AddedProfileAndWeekToDb")]
+    partial class AddedProfileAndWeekToDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,9 @@ namespace HowManyCalories.Data.Migrations
                     b.Property<double>("GoalWeight")
                         .HasColumnType("float");
 
+                    b.Property<int>("StartCalories")
+                        .HasColumnType("int");
+
                     b.Property<double>("StartWeight")
                         .HasColumnType("float");
 
@@ -45,11 +48,11 @@ namespace HowManyCalories.Data.Migrations
 
             modelBuilder.Entity("HowManyCalories.Models.Week", b =>
                 {
-                    b.Property<int>("WeekNumber")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WeekNumber"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<double>("AverageWeight")
                         .HasColumnType("float");
@@ -69,10 +72,13 @@ namespace HowManyCalories.Data.Migrations
                     b.Property<double>("ExpectedWeight")
                         .HasColumnType("float");
 
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("int");
+
                     b.Property<int>("WeeklyCalories")
                         .HasColumnType("int");
 
-                    b.HasKey("WeekNumber");
+                    b.HasKey("Id");
 
                     b.ToTable("Weeks");
                 });

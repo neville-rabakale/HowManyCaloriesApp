@@ -4,7 +4,7 @@
 
 namespace HowManyCalories.Data.Migrations
 {
-    public partial class AddedUserProfileAndWeekToDb : Migration
+    public partial class AddedProfileAndWeekToDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,7 +15,8 @@ namespace HowManyCalories.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartWeight = table.Column<double>(type: "float", nullable: false),
-                    GoalWeight = table.Column<double>(type: "float", nullable: false)
+                    GoalWeight = table.Column<double>(type: "float", nullable: false),
+                    StartCalories = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -26,8 +27,9 @@ namespace HowManyCalories.Data.Migrations
                 name: "Weeks",
                 columns: table => new
                 {
-                    WeekNumber = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    WeekNumber = table.Column<int>(type: "int", nullable: false),
                     ExpectedWeight = table.Column<double>(type: "float", nullable: false),
                     AverageWeight = table.Column<double>(type: "float", nullable: false),
                     WeeklyCalories = table.Column<int>(type: "int", nullable: false),
@@ -38,7 +40,7 @@ namespace HowManyCalories.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Weeks", x => x.WeekNumber);
+                    table.PrimaryKey("PK_Weeks", x => x.Id);
                 });
         }
 

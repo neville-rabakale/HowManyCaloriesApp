@@ -1,0 +1,32 @@
+﻿@model UserProfile
+
+
+
+<div class="row justify-content-center">
+    <div class="col-10">
+        <div class="border p-3 mt-4 row">
+            <div class="col-12 pb-2">
+                <h2 class="text-primary">How Many Calories</h2>
+                <hr />
+            </div>
+            <div class="mb-3">
+                <label asp-for="StartWeight" in Kilograms></label>
+                <input asp-for="StartWeight" class="form-control" />
+                <span asp-validation-for="StartWeight" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="GoalWeight"></label>
+                <input asp-for="GoalWeight" KG class="form-control" />
+                <span asp-validation-for="GoalWeight" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="StartCalories"></label>
+                <input asp-for="StartCalories" class="form-control" />
+                <span asp-validation-for="StartCalories" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary" style="width:150px">SUBMIT</button>
+            </div>
+        </div>
+    </div>
+</div>

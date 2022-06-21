@@ -1,0 +1,71 @@
+﻿@model IEnumerable<HowManyCalories.Models.Week>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpectedWeight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AverageWeight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WeeklyCalories)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CurrentCalories)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CheckIn1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CheckIn2)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CheckIn3)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpectedWeight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AverageWeight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WeeklyCalories)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CurrentCalories)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckIn1)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckIn2)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckIn3)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.WeekNumber">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.WeekNumber">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.WeekNumber">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

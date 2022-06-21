@@ -1,0 +1,64 @@
+﻿@model HowManyCalories.Models.Week
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Week</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="WeekNumber" />
+            <div class="form-group">
+                <label asp-for="ExpectedWeight" class="control-label"></label>
+                <input asp-for="ExpectedWeight" class="form-control" />
+                <span asp-validation-for="ExpectedWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AverageWeight" class="control-label"></label>
+                <input asp-for="AverageWeight" class="form-control" />
+                <span asp-validation-for="AverageWeight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WeeklyCalories" class="control-label"></label>
+                <input asp-for="WeeklyCalories" class="form-control" />
+                <span asp-validation-for="WeeklyCalories" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CurrentCalories" class="control-label"></label>
+                <input asp-for="CurrentCalories" class="form-control" />
+                <span asp-validation-for="CurrentCalories" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckIn1" class="control-label"></label>
+                <input asp-for="CheckIn1" class="form-control" />
+                <span asp-validation-for="CheckIn1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckIn2" class="control-label"></label>
+                <input asp-for="CheckIn2" class="form-control" />
+                <span asp-validation-for="CheckIn2" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CheckIn3" class="control-label"></label>
+                <input asp-for="CheckIn3" class="form-control" />
+                <span asp-validation-for="CheckIn3" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
