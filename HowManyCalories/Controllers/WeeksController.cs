@@ -29,19 +29,6 @@ namespace HowManyCalories.Controllers
                           View(await _context.Weeks.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Weeks'  is null.");
         }
-        public Week CreateWeek()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            Week week = new()
-            {
-                UserProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser"),
-            };
-            //week.UserProfileId = GetFirstOrDefaultProfile(u => u.Id == week.UserProfileId);
-
-            return week;
-        }
 
         //Week 1 Get
         public IActionResult Week1()
@@ -54,6 +41,7 @@ namespace HowManyCalories.Controllers
             {
                 week.UserProfileId = week.UserProfile.Id;
                 week.WeekNumber = 1;
+                week.WeeklyLoss = week.UserProfile.StartWeight;
                 week.ExpectedWeight = week.UserProfile.StartWeight;
                 week.AverageWeight = week.UserProfile.StartWeight;
                 week.CurrentCalories = week.UserProfile.StartCalories;
@@ -76,7 +64,6 @@ namespace HowManyCalories.Controllers
 
         }
 
-
         //Week 2 Get
         public IActionResult Week2()
         {
@@ -85,29 +72,93 @@ namespace HowManyCalories.Controllers
 
             //This is week2
             // we need to pull week 1 from db
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1);
             //and make sure we pull the week 1 record
-            if (week2.WeekNumber == 1)
+            if (weekFromDb.WeekNumber == 1)
             {
-                week2.UserProfileId = week2.UserProfile.Id;
                 week2.WeekNumber = 2;
-                week2.AverageWeight = AverageCheckinWeight(week2.CheckIn1,week2.CheckIn2,week2.CheckIn3);
-                week2.ExpectedWeight = AveExpectedWeight(week2.UserProfile.StartWeight, week2.UserProfile.GoalWeight, week2.UserProfile.Duration, week2.AverageWeight);
-                week2.CurrentCalories = week2.WeeklyCalories;
-                week2.WeeklyCalories = WeeklyCal(week2.ExpectedWeight, week2.AverageWeight, week2.CurrentCalories);
+                week2.WeeklyLoss = weekFromDb.WeeklyLoss;
+                week2.UserProfileId = weekFromDb.UserProfile.Id;
+                week2.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week2.ExpectedWeight = ExpectedLoss(weekFromDb.WeeklyLoss,weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week2.CurrentCalories = weekFromDb.WeeklyCalories;
+                week2.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
                 //If we need to add checkin then they are 0
             }
             return View(week2);
         }
 
-
-        double AveExpectedWeight( double startWeight, double goalWeight, double time, double currentWeight)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week2(Week week2)
         {
-            var totalLoss = goalWeight - startWeight;
-            var weeklyLoss = totalLoss / time;
-            var averageExpWeight = currentWeight - weeklyLoss;
-            return averageExpWeight;
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week2);
+            TempData["Success"] = "Week 1 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week3");
+
+        }
+        //Week 2 Get
+        public IActionResult Week3()
+        {
+
+            Week week3 = CreateWeek();
+
+            //This is week2
+            // we need to pull week 1 from db
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2);
+            //and make sure we pull the week 1 record
+            if (weekFromDb.WeekNumber == 2)
+            {
+                week3.WeekNumber = 3;
+                week3.WeeklyLoss = weekFromDb.WeeklyLoss;
+                week3.UserProfileId = weekFromDb.UserProfile.Id;
+                week3.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week3.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week3.CurrentCalories = weekFromDb.WeeklyCalories;
+                week3.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week3);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week3(Week week3)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week3);
+            TempData["Success"] = "Week 2 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week4");
+
+        }
+
+        //Create mew week instance with current user Id
+        public Week CreateWeek()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            Week week = new()
+            {
+                UserProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser"),
+            };
+            return week;
+        }
+
+        //Calculate expected weekly weight loss
+        double ExpectedLoss( double current, double startWeight, double goalWeight, double time)
+        {
+            var totalLoss = startWeight - goalWeight;
+            var weeklyLoss = totalLoss / (time - 1);
+            var expectedLoss = current - weeklyLoss;
+            return expectedLoss;
+
+        }
 
         //calculate weekly calories
         double WeeklyCal(double expectedWeight, double averageWeight, double calories)
@@ -129,6 +180,7 @@ namespace HowManyCalories.Controllers
             double avg = ((checkIn1 + checkIn2 + checkIn3) / 3);
             return avg;
         }
+
         //Get Item for Weeks Query based on a condition
         public Week GetFirstOrDefaultWeek (Expression<Func<Week, bool>> filter, string? includeProperties = null)
         {
