@@ -1,7 +1,11 @@
 ﻿@model UserProfile
 
-
-<form method="post" asp-action="IndexPost" enctype="multipart/form-data">
+@if(TempData["Success"] != null)
+{
+    <h2>@TempData["Success"]</h2>
+}
+<form method="post" asp-controller="Start" asp-action="Index" enctype="multipart/form-data">
+  
 
 <div class="row justify-content-center">
     <div class="col-10">

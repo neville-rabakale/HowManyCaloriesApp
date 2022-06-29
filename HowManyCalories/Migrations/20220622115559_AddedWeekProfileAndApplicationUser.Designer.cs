@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HowManyCalories.Data.Migrations
+namespace HowManyCalories.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220621091357_AddedDurationToUserProfile")]
-    partial class AddedDurationToUserProfile
+    [Migration("20220622115559_AddedWeekProfileAndApplicationUser")]
+    partial class AddedWeekProfileAndApplicationUser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -32,6 +32,10 @@ namespace HowManyCalories.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
@@ -45,6 +49,8 @@ namespace HowManyCalories.Data.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("UserProfiles");
                 });
@@ -75,6 +81,9 @@ namespace HowManyCalories.Data.Migrations
                     b.Property<double>("ExpectedWeight")
                         .HasColumnType("float");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WeekNumber")
                         .HasColumnType("int");
 
@@ -82,6 +91,8 @@ namespace HowManyCalories.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("Weeks");
                 });
@@ -303,6 +314,28 @@ namespace HowManyCalories.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("HowManyCalories.Models.UserProfile", b =>
+                {
+                    b.HasOne("HowManyCalories.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("HowManyCalories.Models.Week", b =>
+                {
+                    b.HasOne("HowManyCalories.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

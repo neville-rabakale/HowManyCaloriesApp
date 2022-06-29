@@ -4,16 +4,18 @@ using HowManyCalories.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace HowManyCalories.Data.Migrations
+namespace HowManyCalories.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220622133111_UpdatedIntsToDoubleForCalculationsinWeekAndProfile")]
+    partial class UpdatedIntsToDoubleForCalculationsinWeekAndProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,19 +32,25 @@ namespace HowManyCalories.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<double>("GoalWeight")
                         .HasColumnType("float");
 
-                    b.Property<int>("StartCalories")
-                        .HasColumnType("int");
+                    b.Property<double>("StartCalories")
+                        .HasColumnType("float");
 
                     b.Property<double>("StartWeight")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.ToTable("UserProfiles");
                 });
@@ -67,19 +75,24 @@ namespace HowManyCalories.Data.Migrations
                     b.Property<double>("CheckIn3")
                         .HasColumnType("float");
 
-                    b.Property<int>("CurrentCalories")
-                        .HasColumnType("int");
+                    b.Property<double>("CurrentCalories")
+                        .HasColumnType("float");
 
                     b.Property<double>("ExpectedWeight")
                         .HasColumnType("float");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WeekNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("WeeklyCalories")
-                        .HasColumnType("int");
+                    b.Property<double>("WeeklyCalories")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("Weeks");
                 });
@@ -301,6 +314,28 @@ namespace HowManyCalories.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("HowManyCalories.Models.UserProfile", b =>
+                {
+                    b.HasOne("HowManyCalories.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("HowManyCalories.Models.Week", b =>
+                {
+                    b.HasOne("HowManyCalories.Models.UserProfile", "UserProfile")
+                        .WithMany()
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

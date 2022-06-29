@@ -6,16 +6,15 @@
 }
 
 <form method="post">
-    <input asp-for="UserProfileId" hidden />
 <div class="row justify-content-center">
     <div class="col-10">
         <div class="border p-3 mt-4 row">
             <div class="col-12 pb-2">
-                <h2 class="text-primary">How Many Calories</h2>
+                <h2 class="text-primary">How Many Calories - Week 2</h2>
                 <hr />
             </div>
             <div class="mb-3">
-                <label asp-for="WeekNumber" in Kilograms></label>
+                <label asp-for="WeekNumber"></label>
                 <input asp-for="WeekNumber" class="form-control disabled" />
                 <span asp-validation-for="WeekNumber" class="text-danger"></span>
             </div>

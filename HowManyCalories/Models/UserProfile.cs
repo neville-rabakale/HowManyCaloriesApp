@@ -16,9 +16,13 @@ namespace HowManyCalories.Models
         public double GoalWeight { get; set; }
         [Display(Name = "Start Calories")]
         [Required]
-        public int StartCalories { get; set; }
+        public double StartCalories { get; set; }
         [Required]
         public int Duration { get; set; }
+        public string ApplicationUserId { get; set; }
+        [ForeignKey("ApplicationUserId")]
+        [ValidateNever]
+        public ApplicationUser ApplicationUser { get; set; }
 
 
     }
