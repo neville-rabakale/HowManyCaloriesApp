@@ -41,13 +41,12 @@ namespace HowManyCalories.Controllers
             {
                 week.UserProfileId = week.UserProfile.Id;
                 week.WeekNumber = 1;
-                week.WeeklyLoss = week.UserProfile.StartWeight;
+                week.WeeklyLoss = WeeklyLoss(week.UserProfile.StartWeight, week.UserProfile.StartWeight, 0); 
                 week.ExpectedWeight = week.UserProfile.StartWeight;
                 week.AverageWeight = week.UserProfile.StartWeight;
                 week.CurrentCalories = week.UserProfile.StartCalories;
                 //Start Calories - 10% of start calories
                 week.WeeklyCalories = week.UserProfile.StartCalories - (week.UserProfile.StartCalories * 0.1);
-                //If we need to add checkin then they are 0
             }
             return View(week);
         }
@@ -67,20 +66,18 @@ namespace HowManyCalories.Controllers
         //Week 2 Get
         public IActionResult Week2()
         {
-
+            //week 2 init
             Week week2 = CreateWeek();
-
-            //This is week2
             // we need to pull week 1 from db
             var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1);
             //and make sure we pull the week 1 record
-            if (weekFromDb.WeekNumber == 1)
+            if (weekFromDb.WeekNumber == 1) //--this could alse be written backwards, if(weekNum != 1){error and return} else {do somthing}
             {
                 week2.WeekNumber = 2;
-                week2.WeeklyLoss = weekFromDb.WeeklyLoss;
                 week2.UserProfileId = weekFromDb.UserProfile.Id;
                 week2.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week2.ExpectedWeight = ExpectedLoss(weekFromDb.WeeklyLoss,weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week2.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week2.AverageWeight, 0); //still 0
+                week2.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week2.CurrentCalories = weekFromDb.WeeklyCalories;
                 week2.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
                 //If we need to add checkin then they are 0
@@ -113,9 +110,9 @@ namespace HowManyCalories.Controllers
             if (weekFromDb.WeekNumber == 2)
             {
                 week3.WeekNumber = 3;
-                week3.WeeklyLoss = weekFromDb.WeeklyLoss;
                 week3.UserProfileId = weekFromDb.UserProfile.Id;
                 week3.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week3.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week3.AverageWeight, weekFromDb.WeeklyLoss);
                 week3.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week3.CurrentCalories = weekFromDb.WeeklyCalories;
                 week3.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
@@ -136,6 +133,39 @@ namespace HowManyCalories.Controllers
             return RedirectToAction("Week4");
 
         }
+        //Week 4 Get
+        public IActionResult Week4()
+        {
+            Week week4 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3);
+            if (weekFromDb.WeekNumber == 3)
+            {
+                week4.WeekNumber += 1;
+                week4.UserProfileId = weekFromDb.UserProfile.Id;
+                week4.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week4.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week4.AverageWeight, weekFromDb.WeeklyLoss);
+                week4.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week4.CurrentCalories = weekFromDb.WeeklyCalories;
+                week4.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week4);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week4(Week week4)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week4);
+            TempData["Success"] = "Week 2 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week5");
+
+        }
+
+
 
         //Create mew week instance with current user Id
         public Week CreateWeek()
@@ -148,6 +178,14 @@ namespace HowManyCalories.Controllers
                 UserProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser"),
             };
             return week;
+        }
+
+        //How much did you actually lose in total
+        double WeeklyLoss( double previous, double current, double total)
+        {   
+            var currentLoss = previous - current;
+
+            return currentLoss += total;
         }
 
         //Calculate expected weekly weight loss

@@ -14,6 +14,7 @@ namespace HowManyCalories.Models
         public double AverageWeight { get; set; }
         public double WeeklyCalories { get; set; }
         public double CurrentCalories { get; set; }
+        [Display(Name =" Total Weight Loss")]
         public double WeeklyLoss { get; set; }
         [Required]
         [Display(Name = "Check in 1")]
