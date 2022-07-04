@@ -73,7 +73,7 @@ namespace HowManyCalories.Controllers
             //and make sure we pull the week 1 record
             if (weekFromDb.WeekNumber == 1) //--this could alse be written backwards, if(weekNum != 1){error and return} else {do somthing}
             {
-                week2.WeekNumber = 2;
+                week2.WeekNumber = weekFromDb.WeekNumber += 1;
                 week2.UserProfileId = weekFromDb.UserProfile.Id;
                 week2.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
                 week2.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week2.AverageWeight, 0); //still 0
@@ -109,7 +109,7 @@ namespace HowManyCalories.Controllers
             //and make sure we pull the week 1 record
             if (weekFromDb.WeekNumber == 2)
             {
-                week3.WeekNumber = 3;
+                week3.WeekNumber = weekFromDb.WeekNumber += 1;
                 week3.UserProfileId = weekFromDb.UserProfile.Id;
                 week3.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
                 week3.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week3.AverageWeight, weekFromDb.WeeklyLoss);
@@ -140,7 +140,7 @@ namespace HowManyCalories.Controllers
             var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3);
             if (weekFromDb.WeekNumber == 3)
             {
-                week4.WeekNumber += 1;
+                week4.WeekNumber = (weekFromDb.WeekNumber += 1);
                 week4.UserProfileId = weekFromDb.UserProfile.Id;
                 week4.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
                 week4.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week4.AverageWeight, weekFromDb.WeeklyLoss);
@@ -164,7 +164,254 @@ namespace HowManyCalories.Controllers
             return RedirectToAction("Week5");
 
         }
+        //Week 4 Get
+        public IActionResult Week5()
+        {
+            Week week5 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 4);
+            if (weekFromDb.WeekNumber == 4)
+            {
+                week5.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week5.UserProfileId = weekFromDb.UserProfile.Id;
+                week5.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week5.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week5.AverageWeight, weekFromDb.WeeklyLoss);
+                week5.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week5.CurrentCalories = weekFromDb.WeeklyCalories;
+                week5.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week5);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week5(Week week5)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week5);
+            TempData["Success"] = "Week 5 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week6");
+
+        }
+        //Week 4 Get
+        public IActionResult Week6()
+        {
+            Week week6 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 5);
+            if (weekFromDb.WeekNumber == 5)
+            {
+                week6.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week6.UserProfileId = weekFromDb.UserProfile.Id;
+                week6.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week6.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week6.AverageWeight, weekFromDb.WeeklyLoss);
+                week6.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week6.CurrentCalories = weekFromDb.WeeklyCalories;
+                week6.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week6);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week6(Week week6)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week6);
+            TempData["Success"] = "Week 6 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week7");
+
+        }
+        //Week 7 Get
+        public IActionResult Week7()
+        {
+            Week week7 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 6);
+            if (weekFromDb.WeekNumber == 6)
+            {
+                week7.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week7.UserProfileId = weekFromDb.UserProfile.Id;
+                week7.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week7.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week7.AverageWeight, weekFromDb.WeeklyLoss);
+                week7.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week7.CurrentCalories = weekFromDb.WeeklyCalories;
+                week7.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week7);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week7(Week week7)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week7);
+            TempData["Success"] = "Week 7 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week8");
+
+        }
+        //Week 8 Get
+        public IActionResult Week8()
+        {
+            Week week8 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7);
+            if (weekFromDb.WeekNumber == 7)
+            {
+                week8.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week8.UserProfileId = weekFromDb.UserProfile.Id;
+                week8.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week8.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week8.AverageWeight, weekFromDb.WeeklyLoss);
+                week8.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week8.CurrentCalories = weekFromDb.WeeklyCalories;
+                week8.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week8);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week8(Week week8)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week8);
+            TempData["Success"] = "Week 8 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week9");
+
+        }
+        //Week 4 Get
+        public IActionResult Week9()
+        {
+            Week week9 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8);
+            if (weekFromDb.WeekNumber == 8)
+            {
+                week9.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week9.UserProfileId = weekFromDb.UserProfile.Id;
+                week9.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week9.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week9.AverageWeight, weekFromDb.WeeklyLoss);
+                week9.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week9.CurrentCalories = weekFromDb.WeeklyCalories;
+                week9.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week9);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week9(Week week9)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week9);
+            TempData["Success"] = "Week 9 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week10");
+
+        }
+        //Week 10 Get
+        public IActionResult Week10()
+        {
+            Week week10 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 9);
+            if (weekFromDb.WeekNumber == 9)
+            {
+                week10.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week10.UserProfileId = weekFromDb.UserProfile.Id;
+                week10.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week10.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week10.AverageWeight, weekFromDb.WeeklyLoss);
+                week10.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week10.CurrentCalories = weekFromDb.WeeklyCalories;
+                week10.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week10);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week10(Week week10)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week10);
+            TempData["Success"] = "Week 10 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week11");
+
+        }
+        //Week 4 Get
+        public IActionResult Week11()
+        {
+            Week week11 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 10);
+            if (weekFromDb.WeekNumber == 10)
+            {
+                week11.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week11.UserProfileId = weekFromDb.UserProfile.Id;
+                week11.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week11.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week11.AverageWeight, weekFromDb.WeeklyLoss);
+                week11.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week11.CurrentCalories = weekFromDb.WeeklyCalories;
+                week11.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week11);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week11(Week week11)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week11);
+            TempData["Success"] = "Week 11 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week12");
+
+        }
+        //Week 12 Get
+        public IActionResult Week12()
+        {
+            Week week12 = CreateWeek();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 11);
+            if (weekFromDb.WeekNumber == 11)
+            {
+                week12.WeekNumber = (weekFromDb.WeekNumber += 1);
+                week12.UserProfileId = weekFromDb.UserProfile.Id;
+                week12.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week12.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week12.AverageWeight, weekFromDb.WeeklyLoss);
+                week12.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week12.CurrentCalories = weekFromDb.WeeklyCalories;
+                week12.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                //If we need to add checkin then they are 0
+            }
+            return View(week12);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week12(Week week12)
+        {
+            //Add inputed userdata to Db and Save
+            _context.Weeks.Add(week12);
+            TempData["Success"] = "Week 12 data added Successfully";
+            _context.SaveChanges();
+            return RedirectToAction("Week12"); // This is the end, Should return summary page with a table with all the stats
+
+        }
 
 
         //Create mew week instance with current user Id
