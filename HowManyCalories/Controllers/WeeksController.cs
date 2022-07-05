@@ -29,6 +29,10 @@ namespace HowManyCalories.Controllers
                           View(await _context.Weeks.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Weeks'  is null.");
         }
+        public IActionResult Summary()
+        {
+            return View();
+        }
 
         //Week 1 Get
         public IActionResult Week1()
@@ -409,9 +413,11 @@ namespace HowManyCalories.Controllers
             _context.Weeks.Add(week12);
             TempData["Success"] = "Week 12 data added Successfully";
             _context.SaveChanges();
-            return RedirectToAction("Week12"); // This is the end, Should return summary page with a table with all the stats
+            return RedirectToAction("Summary"); // This is the end, Should return summary page with a table with all the stats
 
         }
+
+
 
 
         //Create mew week instance with current user Id
@@ -430,9 +436,9 @@ namespace HowManyCalories.Controllers
         //How much did you actually lose in total
         double WeeklyLoss( double previous, double current, double total)
         {   
-            var currentLoss = previous - current;
+            var currentLoss = Math.Round(previous,2) - Math.Round(current,2);
 
-            return currentLoss += total;
+            return currentLoss += Math.Round(total,2);
         }
 
         //Calculate expected weekly weight loss
@@ -441,7 +447,7 @@ namespace HowManyCalories.Controllers
             var totalLoss = startWeight - goalWeight;
             var weeklyLoss = totalLoss / (time - 1);
             var expectedLoss = current - weeklyLoss;
-            return expectedLoss;
+            return Math.Round(expectedLoss,2);
 
         }
 
@@ -449,13 +455,13 @@ namespace HowManyCalories.Controllers
         double WeeklyCal(double expectedWeight, double averageWeight, double calories)
         {
             //if averge weight <= 2% of your expected weight
-            if((averageWeight - expectedWeight) >= (expectedWeight * 0.2))
+            if((averageWeight - expectedWeight) >= (expectedWeight * 0.02))
             {
                 //subtract calories by 10%
                 var weeklycalories = (calories - (calories * 0.1));
                 return weeklycalories;
             }
-            return calories;
+            return Math.Round(calories,2);
             //else do nothing
         }
 
@@ -463,7 +469,7 @@ namespace HowManyCalories.Controllers
         double AverageCheckinWeight(double checkIn1, double checkIn2, double checkIn3)
         {
             double avg = ((checkIn1 + checkIn2 + checkIn3) / 3);
-            return avg;
+            return Math.Round(avg,2);
         }
 
         //Get Item for Weeks Query based on a condition
@@ -532,5 +538,23 @@ namespace HowManyCalories.Controllers
             return query.FirstOrDefault();
         }
 
+
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            IEnumerable<Week> weeks;
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            weeks = GetAllWeeks(u => u.UserProfile.ApplicationUserId == claim.Value);
+
+            return Json(new { data = weeks });
+
+        }
+        #endregion
     }
+
+
 }

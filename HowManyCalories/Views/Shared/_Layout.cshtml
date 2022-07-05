@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HowManyCalories.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" />
+
+
+
 </head>
 <body>
     <header>
@@ -32,6 +36,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">About</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Weeks" asp-action="Summary">Summary</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Weeks</a>
                             <div class="dropdown-menu">
@@ -39,6 +46,15 @@
                                 <a class="dropdown-item" asp-controller="Weeks" asp-action="Week2">Week 2</a>
                                 <a class="dropdown-item" asp-controller="Weeks" asp-action="Week3">Week 3</a>
                                 <a class="dropdown-item" asp-controller="Weeks" asp-action="Week4">Week 4</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week5">Week 5</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week6">Week 6</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week7">Week 7</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week8">Week 8</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week9">Week 9</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week10">Week 10</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week11">Week 11</a>
+                                <a class="dropdown-item" asp-controller="Weeks" asp-action="Week12">Week 12</a>
+
                             </div>
                         </li>
                     </ul>
@@ -63,6 +79,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="//cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -22,22 +22,22 @@
                 </div>
                 <div class="mb-3">
                     <label asp-for="ExpectedWeight"></label>
-                    <input asp-for="ExpectedWeight" class="form-control" readonly />
+                    <input asp-for="ExpectedWeight" class="form-control" type="number" step="0.01" readonly />
                     <span asp-validation-for="ExpectedWeight" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label asp-for="AverageWeight"></label>
-                    <input asp-for="AverageWeight" class="form-control" readonly />
+                    <input asp-for="AverageWeight" class="form-control" type="number" step="0.01" readonly />
                     <span asp-validation-for="AverageWeight" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="WeeklyCalories" in Kilograms></label>
-                    <input asp-for="WeeklyCalories" class="form-control" readonly />
+                    <label asp-for="WeeklyCalories"></label>
+                    <input asp-for="WeeklyCalories" class="form-control" type="number" step="0.01" readonly />
                     <span asp-validation-for="WeeklyCalories" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label asp-for="WeeklyLoss"></label>
-                    <input asp-for="WeeklyLoss" class="form-control" readonly />
+                    <input asp-for="WeeklyLoss" class="form-control" type="number" step="0.01" readonly />
                     <span asp-validation-for="WeeklyLoss" class="text-danger"></span>
                 </div>
                 <div class="mb-3">

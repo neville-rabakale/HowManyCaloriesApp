@@ -9,12 +9,16 @@ namespace HowManyCalories.Models
 
         public int Id { get; set; }
         [Required]
+        [Display(Name = "Week")]
         public int WeekNumber { get; set; } = 0;
+        [Display(Name = "Target Weight")]
         public double ExpectedWeight { get; set; }
+        [Display(Name = "Average Weight")]
         public double AverageWeight { get; set; }
+        [Display(Name = "Calories")]
         public double WeeklyCalories { get; set; }
         public double CurrentCalories { get; set; }
-        [Display(Name =" Total Weight Loss")]
+        [Display(Name ="Total Weight Loss")]
         public double WeeklyLoss { get; set; }
         [Required]
         [Display(Name = "Check in 1")]
