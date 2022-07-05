@@ -1,0 +1,64 @@
+﻿@model Week
+
+@if (TempData["Success"] != null)
+{
+    <h2>@TempData["Success"]</h2>
+}
+
+<form method="post">
+    <input asp-for="UserProfileId" hidden />
+    <input asp-for="WeeklyLoss" hidden />
+    <div class="row justify-content-center">
+        <div class="col-10">
+            <div class="border p-3 mt-4 row">
+                <div class="col-12 pb-2">
+                    <h2 class="text-primary">How Many Calories - Week 8</h2>
+                    <hr />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="WeekNumber"></label>
+                    <input asp-for="WeekNumber " class="form-control" readonly />
+                    <span asp-validation-for="WeekNumber" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="ExpectedWeight"></label>
+                    <input asp-for="ExpectedWeight" class="form-control" readonly />
+                    <span asp-validation-for="ExpectedWeight" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="AverageWeight"></label>
+                    <input asp-for="AverageWeight" class="form-control" readonly />
+                    <span asp-validation-for="AverageWeight" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="WeeklyCalories" in Kilograms></label>
+                    <input asp-for="WeeklyCalories" class="form-control" readonly />
+                    <span asp-validation-for="WeeklyCalories" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="WeeklyLoss"></label>
+                    <input asp-for="WeeklyLoss" class="form-control" readonly />
+                    <span asp-validation-for="WeeklyLoss" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CheckIn1"></label>
+                    <input asp-for="CheckIn1" class="form-control" />
+                    <span asp-validation-for="CheckIn1" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CheckIn2"></label>
+                    <input asp-for="CheckIn2"  class="form-control" />
+                    <span asp-validation-for="CheckIn2" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="CheckIn3"></label>
+                    <input asp-for="CheckIn3" class="form-control" />
+                    <span asp-validation-for="CheckIn3" class="text-danger"></span>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary" style="width:150px">SUBMIT</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
