@@ -12,7 +12,7 @@ namespace HowManyCalories.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public StartController (ApplicationDbContext context)
+        public StartController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -29,20 +29,24 @@ namespace HowManyCalories.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            
+
             profile.ApplicationUserId = claim.Value;
 
             //Before we start, we need to check if the goal is realisitc
             //Check if the weight loss is less than 1% body weight per week
-
+            var weeklyLoss = (profile.StartWeight - profile.GoalWeight) / (profile.Duration - 1);
+            if(weeklyLoss > (profile.GoalWeight * 0.01))
+            {
+                TempData["error"] = "You are restricted to losing 1% of your body weight per week, Please increase your duration or decrease your goal weight";
+                RedirectToAction("Index");
+            }
             //Add inputed userdata to Db and Save
             _context.UserProfiles.Add(profile);
             TempData["Success"] = "Start data created Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week1", "Weeks");
-          
-        }
 
+        }
 
     }
 }

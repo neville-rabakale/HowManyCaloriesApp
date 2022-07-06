@@ -229,7 +229,7 @@ namespace HowManyCalories.Controllers
             if (week6.UserProfile.Duration == 6)
             {
                 //You are at the end of the diet
-                return RedirectToAction("Summary")
+                return RedirectToAction("Summary");
             }
             return RedirectToAction("Week7");
 
@@ -293,10 +293,10 @@ namespace HowManyCalories.Controllers
             _context.SaveChanges();
 
             //check if duration of diet is 8 weeks, if so goto summary else continue
-            if (week6.UserProfile.Duration == 8)
+            if (week8.UserProfile.Duration == 8)
             {
                 //You are at the end of the diet
-                return RedirectToAction("Summary")
+                return RedirectToAction("Summary");
             }
             return RedirectToAction("Week9");
 
@@ -447,7 +447,7 @@ namespace HowManyCalories.Controllers
             return currentLoss += Math.Round(total,2);
         }
 
-        //Calculate expected weekly weight loss
+        //Calculate Weekly expected weight loss
         double ExpectedLoss( double current, double startWeight, double goalWeight, double time)
         {
             var totalLoss = startWeight - goalWeight;
