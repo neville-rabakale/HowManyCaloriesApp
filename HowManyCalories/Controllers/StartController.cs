@@ -32,6 +32,9 @@ namespace HowManyCalories.Controllers
             
             profile.ApplicationUserId = claim.Value;
 
+            //Before we start, we need to check if the goal is realisitc
+            //Check if the weight loss is less than 1% body weight per week
+
             //Add inputed userdata to Db and Save
             _context.UserProfiles.Add(profile);
             TempData["Success"] = "Start data created Successfully";

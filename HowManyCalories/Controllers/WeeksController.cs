@@ -41,6 +41,7 @@ namespace HowManyCalories.Controllers
             Week week = CreateWeek();
 
             //This is the initial week/Week 1.
+            week.WeekNumber = 0;
             if( week.WeekNumber == 0)
             {
                 week.UserProfileId = week.UserProfile.Id;
@@ -96,7 +97,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week2);
-            TempData["Success"] = "Week 1 data added Successfully";
+            TempData["Success"] = "Week 2 data added Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week3");
 
@@ -110,7 +111,7 @@ namespace HowManyCalories.Controllers
             //This is week2
             // we need to pull week 1 from db
             var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2);
-            //and make sure we pull the week 1 record
+            //and make sure we pull the week 2 record
             if (weekFromDb.WeekNumber == 2)
             {
                 week3.WeekNumber = weekFromDb.WeekNumber += 1;
@@ -120,7 +121,6 @@ namespace HowManyCalories.Controllers
                 week3.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week3.CurrentCalories = weekFromDb.WeeklyCalories;
                 week3.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week3);
         }
@@ -132,7 +132,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week3);
-            TempData["Success"] = "Week 2 data added Successfully";
+            TempData["Success"] = "Week 3 data added Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week4");
 
@@ -151,7 +151,6 @@ namespace HowManyCalories.Controllers
                 week4.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week4.CurrentCalories = weekFromDb.WeeklyCalories;
                 week4.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week4);
         }
@@ -163,7 +162,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week4);
-            TempData["Success"] = "Week 2 data added Successfully";
+            TempData["Success"] = "Week 4 data added Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week5");
 
@@ -182,7 +181,6 @@ namespace HowManyCalories.Controllers
                 week5.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week5.CurrentCalories = weekFromDb.WeeklyCalories;
                 week5.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week5);
         }
@@ -213,7 +211,6 @@ namespace HowManyCalories.Controllers
                 week6.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week6.CurrentCalories = weekFromDb.WeeklyCalories;
                 week6.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week6);
         }
@@ -227,6 +224,13 @@ namespace HowManyCalories.Controllers
             _context.Weeks.Add(week6);
             TempData["Success"] = "Week 6 data added Successfully";
             _context.SaveChanges();
+
+            //check if duration of diet is 6 weeks, if so goto summary else continue
+            if (week6.UserProfile.Duration == 6)
+            {
+                //You are at the end of the diet
+                return RedirectToAction("Summary")
+            }
             return RedirectToAction("Week7");
 
         }
@@ -244,7 +248,6 @@ namespace HowManyCalories.Controllers
                 week7.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week7.CurrentCalories = weekFromDb.WeeklyCalories;
                 week7.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week7);
         }
@@ -275,7 +278,6 @@ namespace HowManyCalories.Controllers
                 week8.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week8.CurrentCalories = weekFromDb.WeeklyCalories;
                 week8.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week8);
         }
@@ -289,6 +291,13 @@ namespace HowManyCalories.Controllers
             _context.Weeks.Add(week8);
             TempData["Success"] = "Week 8 data added Successfully";
             _context.SaveChanges();
+
+            //check if duration of diet is 8 weeks, if so goto summary else continue
+            if (week6.UserProfile.Duration == 8)
+            {
+                //You are at the end of the diet
+                return RedirectToAction("Summary")
+            }
             return RedirectToAction("Week9");
 
         }
@@ -337,7 +346,6 @@ namespace HowManyCalories.Controllers
                 week10.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week10.CurrentCalories = weekFromDb.WeeklyCalories;
                 week10.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week10);
         }
@@ -368,7 +376,6 @@ namespace HowManyCalories.Controllers
                 week11.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week11.CurrentCalories = weekFromDb.WeeklyCalories;
                 week11.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week11);
         }
@@ -399,7 +406,6 @@ namespace HowManyCalories.Controllers
                 week12.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week12.CurrentCalories = weekFromDb.WeeklyCalories;
                 week12.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
             }
             return View(week12);
         }
@@ -420,7 +426,7 @@ namespace HowManyCalories.Controllers
 
 
 
-        //Create mew week instance with current user Id
+        //Create new week instance with current user Id
         public Week CreateWeek()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -544,6 +550,7 @@ namespace HowManyCalories.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
+            //TODO: Get summary for just the current profile, using profile ID
             IEnumerable<Week> weeks;
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
