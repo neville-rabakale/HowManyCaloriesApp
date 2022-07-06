@@ -38,7 +38,7 @@ namespace HowManyCalories.Controllers
             if(weeklyLoss > (profile.GoalWeight * 0.01))
             {
                 TempData["error"] = "You are restricted to losing 1% of your body weight per week, Please increase your duration or decrease your goal weight";
-                RedirectToAction("Index");
+                return RedirectToAction("Index");
             }
             //Add inputed userdata to Db and Save
             _context.UserProfiles.Add(profile);
