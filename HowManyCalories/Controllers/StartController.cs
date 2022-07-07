@@ -22,6 +22,10 @@ namespace HowManyCalories.Controllers
 
             return View(profile);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult Continue()
         {
             UserProfile uProfile = new();

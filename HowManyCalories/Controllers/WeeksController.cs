@@ -466,9 +466,10 @@ namespace HowManyCalories.Controllers
         //How much did you actually lose in total
         double WeeklyLoss( double previous, double current, double total)
         {   
-            var currentLoss = Math.Round(previous,2) - Math.Round(current,2);
+            var currentLoss = previous - current;
+            currentLoss += total;
 
-            return currentLoss += Math.Round(total,2);
+            return Math.Round(currentLoss, 2);
         }
 
         //Calculate Weekly expected weight loss
