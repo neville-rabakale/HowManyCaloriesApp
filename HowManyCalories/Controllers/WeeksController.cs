@@ -236,6 +236,9 @@ namespace HowManyCalories.Controllers
             //check if duration of diet is 6 weeks, if so goto summary else continue
             if (week6.UserProfile.Duration == 6)
             {
+                week6.UserProfile.Duration = 0;
+                _context.Weeks.Add(week6);
+                _context.SaveChanges();
                 TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
@@ -308,6 +311,10 @@ namespace HowManyCalories.Controllers
             //check if duration of diet is 8 weeks, if so goto summary else continue
             if (week8.UserProfile.Duration == 8)
             {
+                week8.UserProfile.Duration = 0;
+                //Add inputed userdata to Db and Save
+                _context.Weeks.Add(week8);
+                _context.SaveChanges();
                 TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
@@ -439,7 +446,9 @@ namespace HowManyCalories.Controllers
         [Authorize]
         public IActionResult Week12(Week week12)
         {
+
             //Add inputed userdata to Db and Save
+            week12.UserProfile.Duration = 0; //Duration is 0 when Program is complete
             _context.Weeks.Add(week12);
             TempData["Success"] = "Week 12 Completed Successfully, Very well done, YOU DID IT!!!";
             _context.SaveChanges();

@@ -1,4 +1,5 @@
-﻿@model UserProfile
+﻿@using HowManyCalories.Utility
+@model UserProfile
 
 
 
@@ -11,17 +12,22 @@
             </div>
             <p class="col-12">
                 Welcome to How many Calories, the simple app which help you determin your daily caloric intake.
-                Week by week you will input 3 checkins of your weight which will tell us the your progress.
+                Week by week you will input 3 checkins of your weight which will help us measure your progress.
                 Depending on this your calories will be adjusted for you to reach your goals.
                 Good luck on your weight loss journey :) 
             </p>
-			<a asp-controller="Start" asp-action="Index" class="btn btn-primary" style="width:150px">
-				Start Here
-			</a>
-			<a asp-controller="Start" asp-action="Continue" class="btn btn-secondary" style="width:150px">
-				Continue Here
-			</a>
-
+            @if(User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_User)){
+			    <a asp-controller="Start" asp-action="Index" class="btn btn-primary" style="width:150px">
+				    Start Here
+			    </a>
+			    <a asp-controller="Start" asp-action="Continue" class="btn btn-secondary" style="width:150px">
+				    Continue Here
+			    </a>
+            }else{
+			    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary" style="width:150px">
+				    Register to begin
+			    </a>
+            }
         </div>
     </div>
 </div>

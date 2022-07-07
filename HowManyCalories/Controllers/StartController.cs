@@ -23,8 +23,6 @@ namespace HowManyCalories.Controllers
             return View(profile);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         [Authorize]
         public IActionResult Continue()
         {
@@ -60,7 +58,7 @@ namespace HowManyCalories.Controllers
                     return RedirectToWeek((week.WeekNumber + 1));
                     //We can also combine this action with the index action 
 
-                }
+                }               
 
             }
 
@@ -74,8 +72,40 @@ namespace HowManyCalories.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
+            var week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
             profile.ApplicationUserId = claim.Value;
+
+            var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
+            //Check if there are multiple UserProfile Id's for this User
+            if (profileFromDb != null)
+            {
+                if (profileFromDb.Count() >= 1)
+                {
+                    //If yes, get the largest id in the UserProfileId row -- Can turn this into a function called GetProfileId --
+                    var profileIds = _context.UserProfiles
+                        .Where(u => u.ApplicationUserId == claim.Value)
+                        .Select(u => u.Id)
+                        .ToList();
+                    var uProfile = GetFirstOrDefaultProfile(u => u.Id == profileIds.Max());
+                    if (uProfile.Duration != 0)
+                    {
+                        //Before we move forward we need to retrieve the weeks of this profile and 
+                        //Return/Goto that particular week
+                        var weekFromDb = _context.Weeks
+                           .Where(u => u.UserProfile.ApplicationUserId == claim.Value)
+                           .Select(u => u.WeekNumber)
+                           .ToList();
+
+                        // need to get the week for the correct profileId
+                        week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max());
+                        
+                        TempData["error"] = "Please complete current weight loss program before starting a new one";
+                        return RedirectToWeek((week.WeekNumber + 1));
+                        //We can also combine this action with the index action
+                    }
+
+                }
+            }
 
             //Before we start, we need to check if the goal is realisitc
             //Check if the weight loss is less than 1% body weight per week
