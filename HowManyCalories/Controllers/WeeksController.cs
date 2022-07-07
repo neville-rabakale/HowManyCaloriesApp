@@ -62,7 +62,7 @@ namespace HowManyCalories.Controllers
         { 
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week1);
-            TempData["Success"] = "Week 1 data added Successfully";
+            TempData["Success"] = "Week 1 Complted Successfully, Well done";
             _context.SaveChanges();
             return RedirectToAction("Week2");
 
@@ -71,21 +71,23 @@ namespace HowManyCalories.Controllers
         //Week 2 Get
         public IActionResult Week2()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             //week 2 init
             Week week2 = CreateWeek();
             // we need to pull week 1 from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1 && u.UserProfile.ApplicationUserId == claim.Value);
             //and make sure we pull the week 1 record
             if (weekFromDb.WeekNumber == 1) //--this could alse be written backwards, if(weekNum != 1){error and return} else {do somthing}
             {
-                week2.WeekNumber = weekFromDb.WeekNumber += 1;
                 week2.UserProfileId = weekFromDb.UserProfile.Id;
                 week2.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
                 week2.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week2.AverageWeight, 0); //still 0
                 week2.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
                 week2.CurrentCalories = weekFromDb.WeeklyCalories;
                 week2.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
+                week2.WeekNumber = weekFromDb.WeekNumber += 1;
+
             }
             return View(week2);
         }
@@ -97,7 +99,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week2);
-            TempData["Success"] = "Week 2 data added Successfully";
+            TempData["Success"] = "Week 2 Completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week3");
 
@@ -105,12 +107,13 @@ namespace HowManyCalories.Controllers
         //Week 2 Get
         public IActionResult Week3()
         {
-
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week3 = CreateWeek();
 
             //This is week2
             // we need to pull week 1 from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2 && u.UserProfile.ApplicationUserId == claim.Value);
             //and make sure we pull the week 2 record
             if (weekFromDb.WeekNumber == 2)
             {
@@ -132,7 +135,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week3);
-            TempData["Success"] = "Week 3 data added Successfully";
+            TempData["Success"] = "Week 3 Completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week4");
 
@@ -140,8 +143,10 @@ namespace HowManyCalories.Controllers
         //Week 4 Get
         public IActionResult Week4()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week4 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 3)
             {
                 week4.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -162,7 +167,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week4);
-            TempData["Success"] = "Week 4 data added Successfully";
+            TempData["Success"] = "Week 4 Completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week5");
 
@@ -170,8 +175,10 @@ namespace HowManyCalories.Controllers
         //Week 4 Get
         public IActionResult Week5()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week5 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 4);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 4 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 4)
             {
                 week5.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -192,7 +199,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week5);
-            TempData["Success"] = "Week 5 data added Successfully";
+            TempData["Success"] = "Week 5 Completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week6");
 
@@ -200,8 +207,10 @@ namespace HowManyCalories.Controllers
         //Week 4 Get
         public IActionResult Week6()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week6 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 5);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 5 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 5)
             {
                 week6.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -222,23 +231,26 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week6);
-            TempData["Success"] = "Week 6 data added Successfully";
             _context.SaveChanges();
 
             //check if duration of diet is 6 weeks, if so goto summary else continue
             if (week6.UserProfile.Duration == 6)
             {
+                TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
             }
+            TempData["Success"] = "Week 6 Completed Successfully, Keep it going!";
             return RedirectToAction("Week7");
 
         }
         //Week 7 Get
         public IActionResult Week7()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week7 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 6);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 6 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 6)
             {
                 week7.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -259,7 +271,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week7);
-            TempData["Success"] = "Week 7 data added Successfully";
+            TempData["Success"] = "Week 7 completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week8");
 
@@ -267,8 +279,10 @@ namespace HowManyCalories.Controllers
         //Week 8 Get
         public IActionResult Week8()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week8 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 7)
             {
                 week8.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -289,23 +303,27 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week8);
-            TempData["Success"] = "Week 8 data added Successfully";
             _context.SaveChanges();
 
             //check if duration of diet is 8 weeks, if so goto summary else continue
             if (week8.UserProfile.Duration == 8)
             {
+                TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
             }
+            TempData["Success"] = "Week 8 Completed Successfully, Only 4 to go, You got this";
+
             return RedirectToAction("Week9");
 
         }
         //Week 4 Get
         public IActionResult Week9()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week9 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 8)
             {
                 week9.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -327,7 +345,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week9);
-            TempData["Success"] = "Week 9 data added Successfully";
+            TempData["Success"] = "Week 9 Completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week10");
 
@@ -335,8 +353,10 @@ namespace HowManyCalories.Controllers
         //Week 10 Get
         public IActionResult Week10()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week10 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 9);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 9 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 9)
             {
                 week10.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -357,7 +377,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week10);
-            TempData["Success"] = "Week 10 data added Successfully";
+            TempData["Success"] = "Week 10 Completed Successfully";
             _context.SaveChanges();
             return RedirectToAction("Week11");
 
@@ -365,8 +385,10 @@ namespace HowManyCalories.Controllers
         //Week 4 Get
         public IActionResult Week11()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week11 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 10);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 10 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 10)
             {
                 week11.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -387,7 +409,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week11);
-            TempData["Success"] = "Week 11 data added Successfully";
+            TempData["Success"] = "Week 11 Completed Successfully, Home Stretch!!!";
             _context.SaveChanges();
             return RedirectToAction("Week12");
 
@@ -395,8 +417,10 @@ namespace HowManyCalories.Controllers
         //Week 12 Get
         public IActionResult Week12()
         {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week12 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 11);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 11 && u.UserProfile.ApplicationUserId == claim.Value);
             if (weekFromDb.WeekNumber == 11)
             {
                 week12.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -417,7 +441,7 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week12);
-            TempData["Success"] = "Week 12 data added Successfully";
+            TempData["Success"] = "Week 12 Completed Successfully, Very well done, YOU DID IT!!!";
             _context.SaveChanges();
             return RedirectToAction("Summary"); // This is the end, Should return summary page with a table with all the stats
 
