@@ -51,13 +51,37 @@
                     <input asp-for="CheckIn3" class="form-control" />
                     <span asp-validation-for="CheckIn3" class="text-danger"></span>
                 </div>
-                <div class="col-3">
+               <div class="col-3">
                     <button type="submit" class="btn btn-primary" style="width:150px">SUBMIT</button>
                 </div>
                 <div class="col-3">
                     <a class="btn btn-secondary" style="width:150px" asp-controller="Weeks" asp-action="Summary">SUMMARY</a>
                 </div>
+                <div class="col-3">
+                    <a class="btn btn-danger" style="width:150px" onclick="return ValidateInput()" >END PROGRAM</a>
+                </div>
             </div>
         </div>
     </div>
 </form>
+
+@section Scripts{
+<script>
+        function ValidateInput(){
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "This will end your current progress!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, End program!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location = "EndProgram";
+      }
+
+    })
+        }
+</script>
+}>
