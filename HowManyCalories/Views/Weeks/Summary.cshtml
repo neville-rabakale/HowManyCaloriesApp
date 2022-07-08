@@ -1,10 +1,11 @@
-﻿
+﻿@using HowManyCalories.Utility
+
 <div class="container p-3">
-	<div class=" d-flex justify-content-between pt-4">
-		<div class="p-2">
-			<h2 class="text-primary">Summary</h2>
-		</div>
-	</div>
+    <div class=" d-flex justify-content-between pt-4">
+        <div class="p-2">
+            <h2 class="text-primary">Summary</h2>
+        </div>
+    </div>
 </div>
 
 
@@ -22,9 +23,27 @@
             </tr>
         </thead>
     </table>
+
+    @if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_User))
+    {
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary" style="width:150px">
+            Home
+        </a>
+        <a asp-controller="Start" asp-action="Continue" class="btn btn-secondary" style="width:150px">
+            Continue
+        </a>
+    }
+    else
+    {
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary" style="width:150px">
+            Register to begin
+        </a>
+    }
 </div>
 
 
+
+
 @section Scripts{
-    <script src="~/js/summary.js"></script>
+<script src="~/js/summary.js"></script>
 }
