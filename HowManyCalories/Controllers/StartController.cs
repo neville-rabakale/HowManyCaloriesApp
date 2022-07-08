@@ -45,6 +45,14 @@ namespace HowManyCalories.Controllers
                         .ToList();
                     uProfile = GetFirstOrDefaultProfile(u=> u.Id == profileIds.Max());
 
+                    //We need to check if the profile is not yet complete -> Duration = 0
+                    if( uProfile.Duration == 0)
+                    {
+                        TempData["success"] = "You have already completed your weight loss program";
+                        //If complete, go to summary
+                        return RedirectToAction("Summary","Weeks");
+                    }
+
                     //Before we move forward we need to retrieve the weeks of this profile and 
                     //Return/Goto that particular week
                     var weekFromDb = _context.Weeks

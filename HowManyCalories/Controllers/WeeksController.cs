@@ -223,6 +223,25 @@ namespace HowManyCalories.Controllers
             }
             return View(week6);
         }
+        //public IActionResult EndOfProgram(Week week, int weekNumber)
+        //{
+        //    var claimsIdentity = (ClaimsIdentity)User.Identity;
+        //    var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+        //    week = GetFirstOrDefaultWeek(u => u.WeekNumber == weekNumber && u.UserProfile.ApplicationUserId == claim.Value);
+
+        //    if(week.UserProfile.Duration == weekNumber)
+        //    {
+        //        //Set Duration to 0 -> End of program
+        //        week.UserProfile.Duration = 0;
+        //        _context.Weeks.Add(week);
+        //        _context.SaveChanges();
+        //        TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
+        //        //You are at the end of the diet
+        //        return RedirectToAction("Summary");
+        //    }
+
+        //   // return;
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -231,18 +250,27 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week6);
-            _context.SaveChanges();
 
+            var wk = week6;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+           // Get profile from Db for user where Duration is not 0 -> where profile is active
+            UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
+           
             //check if duration of diet is 6 weeks, if so goto summary else continue
-            if (week6.UserProfile.Duration == 6)
+            if (userProfile.Duration == 6 && wk.WeekNumber == 6)
             {
-                week6.UserProfile.Duration = 0;
-                _context.Weeks.Add(week6);
+                //Set Duration to 0 -> End of program
+                userProfile.Duration = 0;
+                _context.UserProfiles.Update(userProfile);
                 _context.SaveChanges();
                 TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
             }
+            _context.SaveChanges();
             TempData["Success"] = "Week 6 Completed Successfully, Keep it going!";
             return RedirectToAction("Week7");
 
@@ -324,7 +352,7 @@ namespace HowManyCalories.Controllers
             return RedirectToAction("Week9");
 
         }
-        //Week 4 Get
+        //Week 9 Get
         public IActionResult Week9()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
