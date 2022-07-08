@@ -223,25 +223,7 @@ namespace HowManyCalories.Controllers
             }
             return View(week6);
         }
-        //public IActionResult EndOfProgram(Week week, int weekNumber)
-        //{
-        //    var claimsIdentity = (ClaimsIdentity)User.Identity;
-        //    var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-        //    week = GetFirstOrDefaultWeek(u => u.WeekNumber == weekNumber && u.UserProfile.ApplicationUserId == claim.Value);
 
-        //    if(week.UserProfile.Duration == weekNumber)
-        //    {
-        //        //Set Duration to 0 -> End of program
-        //        week.UserProfile.Duration = 0;
-        //        _context.Weeks.Add(week);
-        //        _context.SaveChanges();
-        //        TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
-        //        //You are at the end of the diet
-        //        return RedirectToAction("Summary");
-        //    }
-
-        //   // return;
-        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -334,19 +316,27 @@ namespace HowManyCalories.Controllers
         {
             //Add inputed userdata to Db and Save
             _context.Weeks.Add(week8);
-            _context.SaveChanges();
 
-            //check if duration of diet is 8 weeks, if so goto summary else continue
-            if (week8.UserProfile.Duration == 8)
+            var wk = week8;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            // Get profile from Db for user where Duration is not 0 -> where profile is active
+            UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
+
+            //check if duration of diet is 6 weeks, if so goto summary else continue
+            if (userProfile.Duration == 8 && wk.WeekNumber == 8)
             {
-                week8.UserProfile.Duration = 0;
-                //Add inputed userdata to Db and Save
-                _context.Weeks.Add(week8);
+                //Set Duration to 0 -> End of program
+                userProfile.Duration = 0;
+                _context.UserProfiles.Update(userProfile);
                 _context.SaveChanges();
                 TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
             }
+            _context.SaveChanges();
             TempData["Success"] = "Week 8 Completed Successfully, Only 4 to go, You got this";
 
             return RedirectToAction("Week9");
@@ -476,15 +466,21 @@ namespace HowManyCalories.Controllers
         {
 
             //Add inputed userdata to Db and Save
-            week12.UserProfile.Duration = 0; //Duration is 0 when Program is complete
             _context.Weeks.Add(week12);
+            var wk = week12;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            // Get profile from Db for user where Duration is not 0 -> where profile is active
+            UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
+            userProfile.Duration = 0;
+            _context.UserProfiles.Update(userProfile);
             TempData["Success"] = "Week 12 Completed Successfully, Very well done, YOU DID IT!!!";
             _context.SaveChanges();
-            return RedirectToAction("Summary"); // This is the end, Should return summary page with a table with all the stats
+            return RedirectToAction("Summary"); // This is the end, return to summary page with a table with all the stats
 
         }
-
-
 
 
         //Create new week instance with current user Id
