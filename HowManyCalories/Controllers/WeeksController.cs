@@ -332,7 +332,7 @@ namespace HowManyCalories.Controllers
                 userProfile.Duration = 0;
                 _context.UserProfiles.Update(userProfile);
                 _context.SaveChanges();
-                TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
+                TempData["Success"] = "Great Job, you have successully completed your 8 week wight loss program, well done!!";
                 //You are at the end of the diet
                 return RedirectToAction("Summary");
             }
@@ -480,6 +480,21 @@ namespace HowManyCalories.Controllers
             _context.SaveChanges();
             return RedirectToAction("Summary"); // This is the end, return to summary page with a table with all the stats
 
+        }
+
+        public IActionResult EndProgram()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            // Get profile from Db for user where Duration is not 0 -> where profile is active
+            UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
+
+            userProfile.Duration = 0;
+            _context.UserProfiles.Update(userProfile);
+            TempData["Success"] = "Weight Loss program Ended";
+            _context.SaveChanges();
+            return RedirectToAction("Summary");
         }
 
 

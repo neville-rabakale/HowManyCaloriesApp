@@ -33,12 +33,7 @@
                     <span asp-validation-for="WeeklyCalories" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="CurrentCalories" in Kilograms></label>
-                    <input asp-for="CurrentCalories" class="form-control" readonly />
-                    <span asp-validation-for="CurrentCalories" class="text-danger"></span>
-                </div>
-                <div class="mb-3">
-                    <label asp-for="CheckIn1" in Kilograms></label>
+                    <label asp-for="CheckIn1"></label>
                     <input asp-for="CheckIn1" class="form-control" />
                     <span asp-validation-for="CheckIn1" class="text-danger"></span>
                 </div>
@@ -58,7 +53,31 @@
                 <div class="col-3">
                     <a class="btn btn-secondary" style="width:150px" asp-controller="Weeks" asp-action="Summary">SUMMARY</a>
                 </div>
+                <div class="col-3">
+                    <a class="btn btn-danger" style="width:150px" onclick="return ValidateInput()" >END PROGRAM</a>
+                </div>
             </div>
         </div>
     </div>
 </form>
+
+@section Scripts{
+<script>
+        function ValidateInput(){
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "This will end your current progress!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, End program!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location = "Summary";
+      }
+
+    })
+        }
+</script>
+}
