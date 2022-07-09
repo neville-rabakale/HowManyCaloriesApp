@@ -109,15 +109,25 @@ namespace HowManyCalories.Controllers
                         
                         TempData["error"] = "Please complete current weight loss program before starting a new one";
                         return RedirectToWeek((week.WeekNumber + 1));
-                        //We can also combine this action with the index action
                     }
-
+                    //Create profile here
+                    var newProfile = profile;
+                    newProfile.Id = profile.Id;
+                    _context.UserProfiles.Add(newProfile);
+                    TempData["Success"] = "Start data created Successfully";
+                    _context.SaveChanges();
+                    return RedirectToAction("Week1", "Weeks");
                 }
             }
-
+            //We need to check that the target is < the start weight
+            if(profile.GoalWeight > profile.StartWeight)
+            {
+                TempData["error"] = "Your  Goal weight needs to be less than your start weight, Please chech that you have entered correcly";
+                return RedirectToAction("Index");
+            }
             //Before we start, we need to check if the goal is realisitc
             //Check if the weight loss is less than 1% body weight per week
-            var weeklyLoss = (profile.StartWeight - profile.GoalWeight) / (profile.Duration - 1);
+            var weeklyLoss = (profile.StartWeight - profile.GoalWeight) / (profile.Duration);
             if(weeklyLoss > (profile.GoalWeight * 0.01))
             {
                 TempData["error"] = "You are restricted to losing 1% of your body weight per week, Please increase your duration or decrease your goal weight";
@@ -130,6 +140,7 @@ namespace HowManyCalories.Controllers
             return RedirectToAction("Week1", "Weeks");
 
         }
+
 
         //GetAll Query for UserProfiles
         public IEnumerable<UserProfile> GetAllProfiles(Expression<Func<UserProfile, bool>>? filter = null, string? includeProperties = null)

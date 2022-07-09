@@ -37,14 +37,17 @@ namespace HowManyCalories.Controllers
         //Week 1 Get
         public IActionResult Week1()
         {
-
             Week week = CreateWeek();
+
+            //we need to check here if there are more than one profile
+            WeekProfile(week);
 
             //This is the initial week/Week 1.
             week.WeekNumber = 0;
             if( week.WeekNumber == 0)
             {
                 week.UserProfileId = week.UserProfile.Id;
+                week.UserProfile.Id = week.UserProfile.Id;
                 week.WeekNumber = 1;
                 week.WeeklyLoss = WeeklyLoss(week.UserProfile.StartWeight, week.UserProfile.StartWeight, 0); 
                 week.ExpectedWeight = week.UserProfile.StartWeight;
@@ -75,8 +78,9 @@ namespace HowManyCalories.Controllers
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             //week 2 init
             Week week2 = CreateWeek();
+            WeekProfile(week2);
             // we need to pull week 1 from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1 && u.UserProfile.ApplicationUserId == claim.Value);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week2.UserProfile.Id);
             //and make sure we pull the week 1 record
             if (weekFromDb.WeekNumber == 1) //--this could alse be written backwards, if(weekNum != 1){error and return} else {do somthing}
             {
@@ -110,10 +114,10 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week3 = CreateWeek();
-
+            WeekProfile(week3);
             //This is week2
             // we need to pull week 1 from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2 && u.UserProfile.ApplicationUserId == claim.Value);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week3.UserProfile.Id);
             //and make sure we pull the week 2 record
             if (weekFromDb.WeekNumber == 2)
             {
@@ -146,7 +150,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week4 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week4);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week4.UserProfile.Id);
             if (weekFromDb.WeekNumber == 3)
             {
                 week4.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -178,7 +183,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week5 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 4 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week5);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 4 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week5.UserProfile.Id);
             if (weekFromDb.WeekNumber == 4)
             {
                 week5.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -210,7 +216,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week6 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 5 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week6);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 5 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week6.UserProfile.Id);
             if (weekFromDb.WeekNumber == 5)
             {
                 week6.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -263,7 +270,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week7 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 6 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week7);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 6 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week7.UserProfile.Id);
             if (weekFromDb.WeekNumber == 6)
             {
                 week7.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -295,7 +303,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week8 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week8);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week7.UserProfile.Id);
             if (weekFromDb.WeekNumber == 7)
             {
                 week8.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -348,7 +357,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week9 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week9);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week9.UserProfile.Id;
             if (weekFromDb.WeekNumber == 8)
             {
                 week9.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -381,7 +391,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week10 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 9 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week10);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 9 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week10.UserProfile.Id);
             if (weekFromDb.WeekNumber == 9)
             {
                 week10.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -413,7 +424,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week11 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 10 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week11);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 10 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week11.UserProfile.Id);
             if (weekFromDb.WeekNumber == 10)
             {
                 week11.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -445,7 +457,8 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week12 = CreateWeek();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 11 && u.UserProfile.ApplicationUserId == claim.Value);
+            WeekProfile(week12);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 11 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week12.UserProfile.Id);
             if (weekFromDb.WeekNumber == 11)
             {
                 week12.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -482,6 +495,32 @@ namespace HowManyCalories.Controllers
 
         }
 
+
+        public Week WeekProfile(Week week)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            //we need to check here if there are more than one profile
+            //if so, go to the latest profile :) 
+            var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
+            //Check if there are multiple UserProfile Id's for this User
+            if (profileFromDb != null)
+            {
+                if (profileFromDb.Count() >= 1)
+                {
+                    //If yes, get the largest id in the UserProfileId row -- Can turn this into a function called GetProfileId --
+                    var profileIds = _context.UserProfiles
+                        .Where(u => u.ApplicationUserId == claim.Value)
+                        .Select(u => u.Id)
+                        .ToList();
+                    week.UserProfile = GetFirstOrDefaultProfile(u => u.Id == profileIds.Max());
+                }
+            }
+            return week;
+
+        }
+
         public IActionResult EndProgram()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -496,7 +535,6 @@ namespace HowManyCalories.Controllers
             _context.SaveChanges();
             return RedirectToAction("Summary");
         }
-
 
         //Create new week instance with current user Id
         public Week CreateWeek()
@@ -615,6 +653,29 @@ namespace HowManyCalories.Controllers
 
             //then return it as a list
             return query.FirstOrDefault();
+        }
+        public IEnumerable<UserProfile> GetAllProfiles(Expression<Func<UserProfile, bool>>? filter = null, string? includeProperties = null)
+        {
+
+            //First we need to query the db
+            IQueryable<UserProfile> query = _context.UserProfiles;
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if (includeProperties != null)
+            {
+                //first split "includeProperties" by ','
+                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    //include all the propery results to the query
+                    query = query.Include(property);
+
+                }
+            }
+            //then return it as a list
+            return query.ToList();
+
         }
 
 
