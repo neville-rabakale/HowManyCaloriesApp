@@ -304,7 +304,7 @@ namespace HowManyCalories.Controllers
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week8 = CreateWeek();
             WeekProfile(week8);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week7.UserProfile.Id);
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week8.UserProfile.Id);
             if (weekFromDb.WeekNumber == 7)
             {
                 week8.WeekNumber = (weekFromDb.WeekNumber += 1);
@@ -358,7 +358,7 @@ namespace HowManyCalories.Controllers
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
             Week week9 = CreateWeek();
             WeekProfile(week9);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week9.UserProfile.Id;
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week9.UserProfile.Id);
             if (weekFromDb.WeekNumber == 8)
             {
                 week9.WeekNumber = (weekFromDb.WeekNumber += 1);
