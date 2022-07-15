@@ -105,18 +105,12 @@ namespace HowManyCalories.Controllers
                            .ToList();
 
                         // need to get the week for the correct profileId
-                        week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max());
+                        week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == uProfile.Id);
                         
                         TempData["error"] = "Please complete current weight loss program before starting a new one";
                         return RedirectToWeek((week.WeekNumber + 1));
                     }
-                    //Create profile here
-                    var newProfile = profile;
-                    newProfile.Id = profile.Id;
-                    _context.UserProfiles.Add(newProfile);
-                    TempData["Success"] = "Start data created Successfully";
-                    _context.SaveChanges();
-                    return RedirectToAction("Week1", "Weeks");
+                    //Create profile here if this doesnt work
                 }
             }
             //We need to check that the target is < the start weight

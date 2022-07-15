@@ -495,7 +495,6 @@ namespace HowManyCalories.Controllers
 
         }
 
-
         public Week WeekProfile(Week week)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -677,8 +676,6 @@ namespace HowManyCalories.Controllers
             return query.ToList();
 
         }
-
-
 
         #region API CALLS
         [HttpGet]
