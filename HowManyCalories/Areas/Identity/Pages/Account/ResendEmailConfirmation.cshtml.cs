@@ -21,11 +21,13 @@ namespace HowManyCalories.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly IWebHostEnvironment _hostEnviroment;
 
-        public ResendEmailConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender emailSender)
+        public ResendEmailConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
         {
             _userManager = userManager;
             _emailSender = emailSender;
+            _hostEnviroment = hostEnvironment;
         }
 
         /// <summary>
@@ -48,6 +50,8 @@ namespace HowManyCalories.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            public string Name { get; set; }
+
         }
 
         public void OnGet()
@@ -76,13 +80,36 @@ namespace HowManyCalories.Areas.Identity.Pages.Account
                 pageHandler: null,
                 values: new { userId = userId, code = code },
                 protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                Input.Email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+            // insert email template here
+            //Path to file
+            var pathtoFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                + Path.DirectorySeparatorChar.ToString() + "Confirm_Account_Registration.html";
+            var subject = " How Many Calories - Email Confirmation";
+            string HtmlBody = "";
+            using (StreamReader streamReader = System.IO.File.OpenText(pathtoFile))
+            {
+                HtmlBody = streamReader.ReadToEnd();
+            }
+            //{0}:Subject, {1}:DateTime, {2}:Name, {3}:Email, {4}:Message, {5}:callbackURL 
+
+            string Message = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.";
+            string messageBody = string.Format(HtmlBody,
+                subject,
+                String.Format("{0:dddd, d MMMM yyyy}", DateTime.Now),
+                user.Email,
+                user.Email,
+                Message,
+                callbackUrl
+                );
+
+
+            await _emailSender.SendEmailAsync(Input.Email, subject, messageBody);
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();
         }
+
+
     }
 }
