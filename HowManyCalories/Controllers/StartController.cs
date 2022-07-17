@@ -53,6 +53,14 @@ namespace HowManyCalories.Controllers
                         return RedirectToAction("Summary","Weeks");
                     }
 
+                    //First we need to check if week exists in the db
+                    var weekfromDbExists = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
+                    // If not return week 1 with profile data
+                    if(weekfromDbExists == null)
+                    {
+                        return RedirectToWeek(week.WeekNumber + 1);
+                    }
+
                     //Before we move forward we need to retrieve the weeks of this profile and 
                     //Return/Goto that particular week
                     var weekFromDb = _context.Weeks
@@ -60,8 +68,9 @@ namespace HowManyCalories.Controllers
                        .Select(u => u.WeekNumber)
                        .ToList();
 
+
                     week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max());
-                 //   week.WeekNumber = weekFromDb.Max(); // need to get the week for the correct profileId
+                    //   week.WeekNumber = weekFromDb.Max(); // need to get the week for the correct profileId
 
                     return RedirectToWeek((week.WeekNumber + 1));
                     //We can also combine this action with the index action 
