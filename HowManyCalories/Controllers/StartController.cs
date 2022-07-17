@@ -89,7 +89,7 @@ namespace HowManyCalories.Controllers
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            var week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
+            Week week = new();
             profile.ApplicationUserId = claim.Value;
 
             var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
@@ -112,6 +112,15 @@ namespace HowManyCalories.Controllers
                            .Where(u => u.UserProfile.ApplicationUserId == claim.Value)
                            .Select(u => u.WeekNumber)
                            .ToList();
+
+                        //First we need to check if week exists in the db
+                        var weekfromDbExists = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
+                        // If not return week 1 with profile data
+                        if (weekfromDbExists == null)
+                        {
+                            TempData["error"] = "Please complete current weight loss program before starting a new one";
+                            return RedirectToWeek(week.WeekNumber + 1);
+                        }
 
                         // need to get the week for the correct profileId
                         week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == uProfile.Id);

@@ -17,17 +17,24 @@
                 Good luck on your weight loss journey :) 
             </p>
             @if(User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_User)){
-			    <a asp-controller="Start" asp-action="Index" class="btn btn-primary" style="width:150px">
-				    Start Here
-			    </a>
-			    <a asp-controller="Start" asp-action="Continue" class="btn btn-secondary" style="width:150px">
-				    Continue Here
-			    </a>
+                <div class ="d-grid gap-2">
+			        <a asp-controller="Start" asp-action="Index" class="btn btn-primary">
+				        Start Here
+			        </a>
+			        <a asp-controller="Start" asp-action="Continue" class="btn btn-secondary">
+				        Continue Here
+			        </a>
+                </div>
             }else{
-			    <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary" style="width:150px">
-				    Register to begin
-			    </a>
+                <div class ="d-grid gap-2">              
+			        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary">
+				        Register
+			        </a>
+			        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-secondary">
+				        Sign in
+			        </a>               
+                </div>
             }
-        </div>
+        </d>
     </div>
 </div>
