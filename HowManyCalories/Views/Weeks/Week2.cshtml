@@ -52,14 +52,10 @@
                     <input asp-for="CheckIn3" class="form-control" />
                     <span asp-validation-for="CheckIn3" class="text-danger"></span>
                 </div>
-                <div class="col-3">
-                    <button type="submit" class="btn btn-primary" style="width:150px">SUBMIT</button>
-                </div>
-                <div class="col-3">
-                    <a class="btn btn-secondary" style="width:150px" asp-controller="Weeks" asp-action="Summary">SUMMARY</a>
-                </div>
-                <div class="col-3">
-                    <a class="btn btn-danger" style="width:150px" onclick="return ValidateInput()" >END PROGRAM</a>
+                <div class ="d-grid gap-2">              
+                    <button type="submit" class="btn btn-primary" >SUBMIT</button>
+                    <a class="btn btn-secondary" asp-controller="Weeks" asp-action="Summary">SUMMARY</a>                   
+                    <a class="btn btn-danger" onclick="return ValidateInput()" >END PROGRAM</a>                  
                 </div>
             </div>
         </div>
