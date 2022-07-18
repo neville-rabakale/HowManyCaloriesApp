@@ -1,9 +1,46 @@
 ﻿@using HowManyCalories.Utility
 @model UserProfile
 
+  <section id="hero" class="d-flex align-items-center">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1 d-flex flex-column justify-content-center">
+          <h1>Let the Science do the tracking for you</h1>
+          <h2> Guessing your calories for sustainable weight loss? Not anymore! Sign up with How Many Calories for your free weight loss calorie tracker</h2>
+          <div class="pt-5">
+          @if(User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_User)){
+                <div>
+			        <a asp-controller="Start" asp-action="Index" class="btn btn-primary" style="width: 150px">
+				        Start
+			        </a>
+			        <a asp-controller="Start" asp-action="Continue" class="btn btn-secondary" style="width: 150px">
+				        Continue
+			        </a>
+                </div>
+            }else{
+                <div>              
+			        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary" style="width: 150px">
+				        Sign up
+			        </a>
+			        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-secondary" style="width: 150px">
+				        Sign in
+			        </a>               
+                </div>
+            }
+            </div>
+        </div>
+        <div class="col-lg-6 order-1 order-lg-2 hero-img">
+          <img src="img/apple.jpg" class="img-fluid" alt="">
+        </div>
+      </div>
+    </div>
+
+  </section><!-- End Hero -->
 
 
-<div class="row justify-content-center">
+
+@*<div class="row justify-content-center">
     <div class="col-10">
         <div class="border p-3 mt-4 row">
             <div class="col-12 pb-2">
@@ -35,6 +72,6 @@
 			        </a>               
                 </div>
             }
-        </d>
+        </div>
     </div>
-</div>
+</div>*@
