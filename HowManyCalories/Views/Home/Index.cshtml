@@ -1,6 +1,7 @@
 ﻿@using HowManyCalories.Utility
 @model UserProfile
 
+ <!-- ======= Hero Section ======= -->
   <section id="hero" class="d-flex align-items-center">
 
     <div class="container">
@@ -38,40 +39,50 @@
 
   </section><!-- End Hero -->
 
+      <!-- ======= About Section ======= -->
+    <section id="about" class="about">
+      <div class="container">
 
+        <div class="row d-flex justify-content-center align-items-center h-100">
 
-@*<div class="row justify-content-center">
-    <div class="col-10">
-        <div class="border p-3 mt-4 row">
-            <div class="col-12 pb-2">
-                <h2 class="text-primary">How Many Calories</h2>
-                <hr />
+          <div class="col-xl-7 col-lg-6 icon-boxes d-flex flex-column align-items-stretch justify-content-center py-5 px-lg-5">
+            <h3>Welcome to how many Calories, where we let the science do the tracking for you</h3>
+            <h4>How it works</h4>
+
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-fingerprint"></i></div>
+              <h4 class="title">Step 1</a></h4>
+              <p class="description">Firstly you will need to enter your current status. 
+                  Your weight in Kilograms, your maintenance calories, your goal weight in Kilograms and the duration of the program.
+                  A link will provided to external calorie calculator if you don't already know your maintenance  calories. 
+                  Studies have shown that for sustainable weight loss you should not lose more than 1% of your body weight per week. 
+                  The program will limit you accordingly. 
+                  If this happens please adjust your goal weight or increase the duration of the program. <b>The key here is sustainability</b>, 
+                  our goal is to make sure that you keep the weight off once you have lost it.</p>
             </div>
-            <p class="col-12">
-                Welcome to How many Calories, the simple app which help you determin your daily caloric intake.
-                Week by week you will input 3 checkins of your weight which will help us measure your progress.
-                Depending on this your calories will be adjusted for you to reach your goals.
-                Good luck on your weight loss journey :) 
-            </p>
-            @if(User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_User)){
-                <div class ="d-grid gap-2">
-			        <a asp-controller="Start" asp-action="Index" class="btn btn-primary">
-				        Start Here
-			        </a>
-			        <a asp-controller="Start" asp-action="Continue" class="btn btn-secondary">
-				        Continue Here
-			        </a>
-                </div>
-            }else{
-                <div class ="d-grid gap-2">              
-			        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary">
-				        Register
-			        </a>
-			        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-secondary">
-				        Sign in
-			        </a>               
-                </div>
-            }
+
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-gift"></i></div>
+              <h4 class="title">Step 2</a></h4>
+              <p class="description">Once your profile is saved, the program will begin. 
+                  Every week you are to weigh yourself 3 times. Once in the beginning of the week, 
+                  in the middle of the week and at the end of the week. <b>These will be your 3 check in values.</b> 
+                  An example of how to do this is to you start the program on a Sunday and check on in that Sunday, 
+                  then again on Wednesday, and lastly on Saturday. 
+                  This will give us an average of your progress for the week.</p>
+            </div>
+
+            <div class="icon-box">
+              <div class="icon"><i class="bx bx-atom"></i></div>
+              <h4 class="title">Step 3</a></h4>
+              <p class="description">Depending your progress your calories will be adjusted. 
+                  This adjustment will occur weekly for the next upcoming weeks until you have completed your program. 
+                  <b>The calories are adjusted using a scientific formula</b> so that you can keep up with your progress and reach your goals.</p>
+            </div>
+
+          </div>
         </div>
-    </div>
-</div>*@
+
+      </div>
+    </section><!-- End About Section -->
+
