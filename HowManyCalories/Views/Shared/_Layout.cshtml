@@ -42,6 +42,11 @@
                             </li>
                         }
                         @if(User.IsInRole(SD.Role_Admin)){
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register User</a>
+                            </li>
+                        }
+                        @if(User.IsInRole(SD.Role_Admin)){
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Weeks</a>
                                 <div class="dropdown-menu">

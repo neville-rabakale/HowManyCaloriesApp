@@ -1,13 +1,74 @@
 ﻿@page
 @using HowManyCalories.Utility
 @model RegisterModel
-@{
-    ViewData["Title"] = "Register";
-}
 
-<h1 class="pt-4">@ViewData["Title"]</h1>
 
-<div class="row">
+
+<section class="vh-100">
+  <div class="container-fluid h-custom">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-md-9 col-lg-6 col-xl-5">
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+          class="img-fluid" alt="Sample image">
+      </div>
+      <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+          <h1 class="col d-flex justify-content-center pt-5"> Sign up</h1>
+        <form id="account" method="post" >
+
+          <div class="divider d-flex align-items-center my-4">
+            <p class="text-center fw-bold mx-3 mb-0"></p>
+          </div>
+
+          <!-- Name input -->
+          <div class="form-outline mb-3">
+         <input asp-for="Input.Name" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
+        <label asp-for="Input.Name" class="form-label"></label>
+        <span asp-validation-for="Input.Name" class="text-danger"></span>
+          </div>
+
+          <!-- Email input -->
+          <div class="form-outline mb-3">
+         <input asp-for="Input.Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" />
+        <label asp-for="Input.Email" class="form-label"></label>
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+          </div>
+
+          <!-- Password input -->
+          <div class="form-outline mb-3">
+            <input asp-for="Input.Password" class="form-control form-cobtrol-lg" autocomplete="current-password" aria-required="true" />
+        <label asp-for="Input.Password" class="form-label"></label>
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+          </div>
+
+          <!-- Confirm Password input -->
+          <div class="form-outline mb-3">
+            <input asp-for="Input.ConfirmPassword" class="form-control form-cobtrol-lg" autocomplete="current-password" aria-required="true" />
+        <label asp-for="Input.ConfirmPassword" class="form-label"></label>
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+          </div>
+
+            @if(User.IsInRole(SD.Role_Admin)){
+                <div class="form-outline mb-3">
+                    <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-select">
+                        <option disabled selected> -Select Role- </option>
+                    </select>
+                </div>
+            }
+
+        <!-- Submit -->
+          <div class="text-center text-lg-start mt-4 pt-2">
+            <button id="registerSubmit" type="submit" class="btn btn-primary btn-lg"
+              style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign Up</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+@*<div class="row">
     <div class="col-md-7">
         <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <h2>Create a new account.</h2>
@@ -73,7 +134,7 @@
             }
         </section>
     </div>
-</div>
+</div>*@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
