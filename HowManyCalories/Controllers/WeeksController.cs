@@ -38,96 +38,149 @@ namespace HowManyCalories.Controllers
         public IActionResult Week1()
         {
             Week week = CreateWeek();
-
-            //we need to check here if there are more than one profile
             WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
 
-            //This is the initial week/Week 1.
-            week.WeekNumber = 0;
-            if( week.WeekNumber == 0)
+            //same as if week == 1 besides incrementing
+            if (weekFromDb.WeekNumber == 1)
+            {
+                week.UserProfileId = weekFromDb.UserProfile.Id;
+                week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week.AverageWeight, 0); //still 0
+                week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week.CurrentCalories = weekFromDb.WeeklyCalories;
+                week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                week.CheckIn1 = weekFromDb.CheckIn1;
+                week.CheckIn2 = weekFromDb.CheckIn2;
+                week.CheckIn3 = weekFromDb.CheckIn3;
+                week.WeekNumber = weekFromDb.WeekNumber;
+                return View(week);
+            }
+            if (weekFromDb.WeekNumber == 0)
             {
                 week.UserProfileId = week.UserProfile.Id;
-                week.UserProfile.Id = week.UserProfile.Id;
-                week.WeekNumber = 1;
                 week.WeeklyLoss = WeeklyLoss(week.UserProfile.StartWeight, week.UserProfile.StartWeight, 0); 
                 week.ExpectedWeight = week.UserProfile.StartWeight;
                 week.AverageWeight = week.UserProfile.StartWeight;
                 week.CurrentCalories = week.UserProfile.StartCalories;
                 //Start Calories - 10% of start calories
                 week.WeeklyCalories = week.UserProfile.StartCalories - (week.UserProfile.StartCalories * 0.1);
+                week.CheckIn1 = 0.0;
+                week.CheckIn2 = 0.0;
+                week.CheckIn3 = 0.0;
+                week.WeekNumber = week.WeekNumber += 1;
+                return View(week);
             }
+
+
             return View(week);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week1(Week week1)
-        { 
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week1);
-            TempData["Success"] = "Week 1 Complted Successfully, Well done";
-            _context.SaveChanges();
-            return RedirectToAction("Week2");
+        public IActionResult Week1(Week week)
+        {
+
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+
+            //check if week2 has been added to db
+            if (weekFromDb == null)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 5
+                TempData["Success"] = "Week 2 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
+
 
         //Week 2 Get
         public IActionResult Week2()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            //week 2 init
-            Week week2 = CreateWeek();
-            WeekProfile(week2);
-            // we need to pull week 1 from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 1 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week2.UserProfile.Id);
-            //and make sure we pull the week 1 record
-            if (weekFromDb.WeekNumber == 1) //--this could alse be written backwards, if(weekNum != 1){error and return} else {do somthing}
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 2)
             {
-                week2.UserProfileId = weekFromDb.UserProfile.Id;
-                week2.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week2.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week2.AverageWeight, 0); //still 0
-                week2.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week2.CurrentCalories = weekFromDb.WeeklyCalories;
-                week2.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                week2.WeekNumber = weekFromDb.WeekNumber += 1;
-
+                NewUpdated(week, weekFromDb);
             }
-            return View(week2);
+            if (weekFromDb.WeekNumber == 1)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week2(Week week2)
+        public IActionResult Week2(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week2);
-            TempData["Success"] = "Week 2 Completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week3");
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 1)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 5
+                TempData["Success"] = "Week 2 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
-        //Week 2 Get
+
+        //Week 3 Get
         public IActionResult Week3()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
             Week week3 = CreateWeek();
             WeekProfile(week3);
-            //This is week2
-            // we need to pull week 1 from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 2 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week3.UserProfile.Id);
-            //and make sure we pull the week 2 record
-            if (weekFromDb.WeekNumber == 2)
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week3);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 3)
             {
-                week3.WeekNumber = weekFromDb.WeekNumber += 1;
-                week3.UserProfileId = weekFromDb.UserProfile.Id;
-                week3.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week3.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week3.AverageWeight, weekFromDb.WeeklyLoss);
-                week3.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week3.CurrentCalories = weekFromDb.WeeklyCalories;
-                week3.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewUpdated(week3, weekFromDb);
+            }
+            if(weekFromDb.WeekNumber == 2)
+            {
+                NewWeek(week3, weekFromDb);
             }
             return View(week3);
         }
@@ -135,364 +188,658 @@ namespace HowManyCalories.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week3(Week week3)
+        public IActionResult Week3(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week3);
-            TempData["Success"] = "Week 3 Completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week4");
+
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 2)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 4
+                TempData["Success"] = "Week 3 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
+
 
         }
         //Week 4 Get
         public IActionResult Week4()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week4 = CreateWeek();
-            WeekProfile(week4);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 3 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week4.UserProfile.Id);
-            if (weekFromDb.WeekNumber == 3)
-            {
-                week4.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week4.UserProfileId = weekFromDb.UserProfile.Id;
-                week4.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week4.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week4.AverageWeight, weekFromDb.WeeklyLoss);
-                week4.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week4.CurrentCalories = weekFromDb.WeeklyCalories;
-                week4.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-            }
-            return View(week4);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public IActionResult Week4(Week week4)
-        {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week4);
-            TempData["Success"] = "Week 4 Completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week5");
-
-        }
-        //Week 4 Get
-        public IActionResult Week5()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week5 = CreateWeek();
-            WeekProfile(week5);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 4 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week5.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
             if (weekFromDb.WeekNumber == 4)
             {
-                week5.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week5.UserProfileId = weekFromDb.UserProfile.Id;
-                week5.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week5.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week5.AverageWeight, weekFromDb.WeeklyLoss);
-                week5.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week5.CurrentCalories = weekFromDb.WeeklyCalories;
-                week5.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewUpdated(week, weekFromDb);
             }
-            return View(week5);
+            if (weekFromDb.WeekNumber == 3)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week5(Week week5)
+        public IActionResult Week4(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week5);
-            TempData["Success"] = "Week 5 Completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week6");
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 3)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 5
+                TempData["Success"] = "Week 4 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
-        //Week 4 Get
-        public IActionResult Week6()
+        //Week 5 Get
+        public IActionResult Week5()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week6 = CreateWeek();
-            WeekProfile(week6);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 5 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week6.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
             if (weekFromDb.WeekNumber == 5)
             {
-                week6.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week6.UserProfileId = weekFromDb.UserProfile.Id;
-                week6.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week6.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week6.AverageWeight, weekFromDb.WeeklyLoss);
-                week6.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week6.CurrentCalories = weekFromDb.WeeklyCalories;
-                week6.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewUpdated(week, weekFromDb);
             }
-            return View(week6);
+            if (weekFromDb.WeekNumber == 4)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week5(Week week)
+        {
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 4)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 5
+                TempData["Success"] = "Week 5 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
+
+        }
+        //Week 6 Get
+        public IActionResult Week6()
+        {
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 6)
+            {
+                NewUpdated(week, weekFromDb);
+            }
+            if (weekFromDb.WeekNumber == 5)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week6(Week week6)
+        public IActionResult Week6(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week6);
-
-            var wk = week6;
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var weekFromDb = GetWeekFromDb(week);
 
-           // Get profile from Db for user where Duration is not 0 -> where profile is active
+            // Get profile from Db for user where Duration is not 0 -> where profile is active
             UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
-           
-            //check if duration of diet is 6 weeks, if so goto summary else continue
-            if (userProfile.Duration == 6 && wk.WeekNumber == 6)
+
+            if (weekFromDb.WeekNumber == 5)
             {
-                //Set Duration to 0 -> End of program
-                userProfile.Duration = 0;
-                _context.UserProfiles.Update(userProfile);
+                _context.Weeks.Add(week);
                 _context.SaveChanges();
-                TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
-                //You are at the end of the diet
-                return RedirectToAction("Summary");
+                AllCheckedIn(week);
             }
-            _context.SaveChanges();
-            TempData["Success"] = "Week 6 Completed Successfully, Keep it going!";
-            return RedirectToAction("Week7");
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //check if duration of diet is 6 weeks, if so goto summary else continue
+                if (userProfile.Duration == 6 && week.WeekNumber == 6)
+                {
+                    //Set Duration to 0 -> End of program
+                    userProfile.Duration = 0;
+                    _context.UserProfiles.Update(userProfile);
+                    _context.SaveChanges();
+                    TempData["Success"] = "Great Job, you have successully completed your 6 week weight loss program";
+                    //You are at the end of the diet
+                    return RedirectToAction("Summary");
+                }
+                else
+                {
+                    TempData["Success"] = "Week 6 Completed Successfully, Keep it going!";
+                    return RedirectToWeek(week.WeekNumber + 1);
+                }
+
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
+
+
+
 
         }
         //Week 7 Get
         public IActionResult Week7()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week7 = CreateWeek();
-            WeekProfile(week7);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 6 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week7.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 7)
+            {
+                NewUpdated(week, weekFromDb);
+            }
             if (weekFromDb.WeekNumber == 6)
             {
-                week7.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week7.UserProfileId = weekFromDb.UserProfile.Id;
-                week7.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week7.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week7.AverageWeight, weekFromDb.WeeklyLoss);
-                week7.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week7.CurrentCalories = weekFromDb.WeeklyCalories;
-                week7.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewWeek(week, weekFromDb);
             }
-            return View(week7);
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week7(Week week7)
+        public IActionResult Week7(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week7);
-            TempData["Success"] = "Week 7 completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week8");
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 6)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 8
+                TempData["Success"] = "Week 7 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week  until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
         //Week 8 Get
         public IActionResult Week8()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week8 = CreateWeek();
-            WeekProfile(week8);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 7 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week8.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 8)
+            {
+                NewUpdated(week, weekFromDb);
+            }
             if (weekFromDb.WeekNumber == 7)
             {
-                week8.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week8.UserProfileId = weekFromDb.UserProfile.Id;
-                week8.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week8.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week8.AverageWeight, weekFromDb.WeeklyLoss);
-                week8.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week8.CurrentCalories = weekFromDb.WeeklyCalories;
-                week8.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewWeek(week, weekFromDb);
             }
-            return View(week8);
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week8(Week week8)
+        public IActionResult Week8(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week8);
-
-            var wk = week8;
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var weekFromDb = GetWeekFromDb(week);
 
             // Get profile from Db for user where Duration is not 0 -> where profile is active
             UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
 
-            //check if duration of diet is 6 weeks, if so goto summary else continue
-            if (userProfile.Duration == 8 && wk.WeekNumber == 8)
+            if (weekFromDb.WeekNumber == 7)
             {
-                //Set Duration to 0 -> End of program
-                userProfile.Duration = 0;
-                _context.UserProfiles.Update(userProfile);
+                _context.Weeks.Add(week);
                 _context.SaveChanges();
-                TempData["Success"] = "Great Job, you have successully completed your 8 week wight loss program, well done!!";
-                //You are at the end of the diet
-                return RedirectToAction("Summary");
+                AllCheckedIn(week);
             }
-            _context.SaveChanges();
-            TempData["Success"] = "Week 8 Completed Successfully, Only 4 to go, You got this";
 
-            return RedirectToAction("Week9");
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //check if duration of diet is 6 weeks, if so goto summary else continue
+                if (userProfile.Duration == 8 && week.WeekNumber == 8)
+                {
+                    //Set Duration to 0 -> End of program
+                    userProfile.Duration = 0;
+                    _context.UserProfiles.Update(userProfile);
+                    _context.SaveChanges();
+                    TempData["Success"] = "Great Job, you have successully completed your 8 week wight loss program, well done!!";
+                    //You are at the end of the diet
+                    return RedirectToAction("Summary");
+                }
+                else
+                {
+                    TempData["Success"] = "Week 8 Completed Successfully, Only 4 to go, You got this";
+                    return RedirectToWeek(week.WeekNumber + 1);
+                }
+
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
         //Week 9 Get
         public IActionResult Week9()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week9 = CreateWeek();
-            WeekProfile(week9);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 8 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week9.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 9)
+            {
+                NewUpdated(week, weekFromDb);
+            }
             if (weekFromDb.WeekNumber == 8)
             {
-                week9.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week9.UserProfileId = weekFromDb.UserProfile.Id;
-                week9.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week9.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week9.AverageWeight, weekFromDb.WeeklyLoss);
-                week9.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week9.CurrentCalories = weekFromDb.WeeklyCalories;
-                week9.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-                //If we need to add checkin then they are 0
+                NewWeek(week, weekFromDb);
             }
-            return View(week9);
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week9(Week week9)
+        public IActionResult Week9(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week9);
-            TempData["Success"] = "Week 9 Completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week10");
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 8)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 10
+                TempData["Success"] = "Week 9 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
         //Week 10 Get
         public IActionResult Week10()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week10 = CreateWeek();
-            WeekProfile(week10);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 9 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week10.UserProfile.Id);
-            if (weekFromDb.WeekNumber == 9)
-            {
-                week10.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week10.UserProfileId = weekFromDb.UserProfile.Id;
-                week10.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week10.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week10.AverageWeight, weekFromDb.WeeklyLoss);
-                week10.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week10.CurrentCalories = weekFromDb.WeeklyCalories;
-                week10.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
-            }
-            return View(week10);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public IActionResult Week10(Week week10)
-        {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week10);
-            TempData["Success"] = "Week 10 Completed Successfully";
-            _context.SaveChanges();
-            return RedirectToAction("Week11");
-
-        }
-        //Week 4 Get
-        public IActionResult Week11()
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week11 = CreateWeek();
-            WeekProfile(week11);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 10 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week11.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
             if (weekFromDb.WeekNumber == 10)
             {
-                week11.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week11.UserProfileId = weekFromDb.UserProfile.Id;
-                week11.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week11.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week11.AverageWeight, weekFromDb.WeeklyLoss);
-                week11.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week11.CurrentCalories = weekFromDb.WeeklyCalories;
-                week11.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewUpdated(week, weekFromDb);
             }
-            return View(week11);
+            if (weekFromDb.WeekNumber == 9)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week11(Week week11)
+        public IActionResult Week10(Week week)
         {
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week11);
-            TempData["Success"] = "Week 11 Completed Successfully, Home Stretch!!!";
-            _context.SaveChanges();
-            return RedirectToAction("Week12");
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 9)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 11
+                TempData["Success"] = "Week 10 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
+
+        }
+        //Week 11 Get
+        public IActionResult Week11()
+        {
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 11)
+            {
+                NewUpdated(week, weekFromDb);
+            }
+            if (weekFromDb.WeekNumber == 10)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public IActionResult Week11(Week week)
+        {
+            WeekProfile(week);
+            //Get max week in db
+            var weekFromDb = GetWeekFromDb(week);
+            //check if week2 has been added to db
+            if (weekFromDb.WeekNumber == 10)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //continue to Week 12
+                TempData["Success"] = "Week 11 Completed Successfully";
+                return RedirectToWeek(week.WeekNumber + 1);
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
 
         }
         //Week 12 Get
         public IActionResult Week12()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            Week week12 = CreateWeek();
-            WeekProfile(week12);
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == 11 && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week12.UserProfile.Id);
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == 12)
+            {
+                NewUpdated(week, weekFromDb);
+            }
             if (weekFromDb.WeekNumber == 11)
             {
-                week12.WeekNumber = (weekFromDb.WeekNumber += 1);
-                week12.UserProfileId = weekFromDb.UserProfile.Id;
-                week12.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week12.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week12.AverageWeight, weekFromDb.WeeklyLoss);
-                week12.ExpectedWeight = ExpectedLoss(weekFromDb.ExpectedWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
-                week12.CurrentCalories = weekFromDb.WeeklyCalories;
-                week12.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                NewWeek(week, weekFromDb);
             }
-            return View(week12);
+            return View(week);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public IActionResult Week12(Week week12)
+        public IActionResult Week12(Week week)
         {
 
-            //Add inputed userdata to Db and Save
-            _context.Weeks.Add(week12);
-            var wk = week12;
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var weekFromDb = GetWeekFromDb(week);
 
             // Get profile from Db for user where Duration is not 0 -> where profile is active
             UserProfile userProfile = GetFirstOrDefaultProfile(u => u.ApplicationUserId == claim.Value && u.Duration != 0);
-            userProfile.Duration = 0;
-            _context.UserProfiles.Update(userProfile);
-            TempData["Success"] = "Week 12 Completed Successfully, Very well done, YOU DID IT!!!";
-            _context.SaveChanges();
-            return RedirectToAction("Summary"); // This is the end, return to summary page with a table with all the stats
 
+            if (weekFromDb.WeekNumber == 11)
+            {
+                _context.Weeks.Add(week);
+                _context.SaveChanges();
+                AllCheckedIn(week);
+            }
+
+            AllCheckedIn(week);
+
+            //Check if all3 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                //Set Duration to 0 -> End of program
+                userProfile.Duration = 0;
+                _context.UserProfiles.Update(userProfile);
+                TempData["Success"] = "Week 12 Completed Successfully, Very well done, YOU DID IT!!!";
+                _context.SaveChanges();
+                return RedirectToAction("Summary"); // This is the end, return to summary page with a table with all the stats
+            }
+            else
+            {
+                //Stay in Week until completion
+                return RedirectToWeek(week.WeekNumber);
+            }
+
+        }
+
+        //Function to check if Checkins were entered correctly
+        //Also allows for one check in to be entered at a time
+        public IActionResult AllCheckedIn(Week week)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            WeekProfile(week);
+
+            //Get max week in db
+            var MaxWeek = _context.Weeks
+               .Where(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0)
+               .Select(u => u.WeekNumber)
+               .ToList();
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == MaxWeek.Max() && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
+            weekFromDb.CheckIn1 = week.CheckIn1;
+            weekFromDb.CheckIn2 = week.CheckIn2;
+            weekFromDb.CheckIn3 = week.CheckIn3;
+
+            //check in 2 or 3 filled but not check in 1
+            if (week.CheckIn1 == 0.0 && (week.CheckIn2 != 0.0 || week.CheckIn3 != 0.0))
+            {
+                TempData["Error"] = "Please fill in the check in data in order";
+                return RedirectToWeek(week.WeekNumber);
+            }
+            //check in 1 and 3 filled but not check in 2
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 == 0.0 & week.CheckIn3 != 0.0)
+            {
+                TempData["Error"] = "Please fill in the check in data in order";
+                return RedirectToWeek(week.WeekNumber);
+            }
+
+            //all checkins are not filled in
+            if (week.CheckIn1 == 0.0 && week.CheckIn2 == 0.0 && week.CheckIn3 == 0.0)
+            {
+                TempData["Error"] = "Please make sure that you filled in your check in data for the week";
+                return RedirectToWeek(week.WeekNumber);
+            }
+            //check in 1 but not 2 or 3
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 == 0.0 & week.CheckIn3 == 0.0)
+            {
+                TempData["Success"] = "Check 1 Complted Successfully";
+                _context.Weeks.Update(weekFromDb);
+                _context.SaveChanges();
+                return RedirectToWeek(week.WeekNumber);
+
+            }
+            //check in 1 and 2 but not 3
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 == 0.0)
+            {
+                TempData["Success"] = "Check 2 Complted Successfully";
+                _context.Weeks.Update(weekFromDb);
+                _context.SaveChanges();
+                return RedirectToWeek(week.WeekNumber);
+
+            }
+            //all check ins filled
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            {
+                _context.Weeks.Update(weekFromDb);
+                _context.SaveChanges();
+                return RedirectToWeek(week.WeekNumber+1);
+
+            }
+            //If we get here something went wrong
+            TempData["Error"] = "Something went wrong, please contact website Admin";
+            return RedirectToWeek(week.WeekNumber);
+        }
+        //Function to update new week instance with values from db
+        public Week NewWeek(Week week, Week weekFromDb)
+        {
+            week.UserProfileId = weekFromDb.UserProfile.Id;
+            week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+            week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb.WeeklyLoss);
+            week.ExpectedWeight = ExpectedLoss(weekFromDb.AverageWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+            week.CurrentCalories = weekFromDb.WeeklyCalories;
+            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+            week.CheckIn1 = 0.0;
+            week.CheckIn2 = 0.0;
+            week.CheckIn3 = 0.0;
+            week.WeekNumber = weekFromDb.WeekNumber += 1;
+            return week;
+        }
+        //Function to update week instance with values from db if new week has already been created
+        public Week NewUpdated(Week week, Week weekFromDb)
+        {
+            week.UserProfileId = weekFromDb.UserProfile.Id;
+            week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+            week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb.WeeklyLoss);
+            week.ExpectedWeight = ExpectedLoss(weekFromDb.AverageWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+            week.CurrentCalories = weekFromDb.WeeklyCalories;
+            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+            week.CheckIn1 = weekFromDb.CheckIn1;
+            week.CheckIn2 = weekFromDb.CheckIn2;
+            week.CheckIn3 = weekFromDb.CheckIn3;
+            week.WeekNumber = weekFromDb.WeekNumber;
+            return week;
+        }
+        //Funtion to get current week from db
+        public Week GetWeekFromDb(Week week)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            var MaxWeek = _context.Weeks
+                .Where(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0)
+                .Select(u => u.WeekNumber)
+                .ToList();
+
+            // we need to pull week from db
+            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == MaxWeek.Max() && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
+            return weekFromDb;
         }
 
         public Week WeekProfile(Week week)
@@ -502,7 +849,7 @@ namespace HowManyCalories.Controllers
 
             //we need to check here if there are more than one profile
             //if so, go to the latest profile :) 
-            var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
+            var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value && u.Duration != 0, includeProperties: "ApplicationUser");
             //Check if there are multiple UserProfile Id's for this User
             if (profileFromDb != null)
             {
@@ -519,6 +866,7 @@ namespace HowManyCalories.Controllers
             return week;
 
         }
+        //Function to end program at any time
 
         public IActionResult EndProgram()
         {
@@ -581,7 +929,7 @@ namespace HowManyCalories.Controllers
             //else do nothing
         }
 
-        //calculate average weight
+        //calculate average weight -- TODO update for instances where only 1 or 2 values are inputted --
         double AverageCheckinWeight(double checkIn1, double checkIn2, double checkIn3)
         {
             double avg = ((checkIn1 + checkIn2 + checkIn3) / 3);
@@ -675,6 +1023,59 @@ namespace HowManyCalories.Controllers
             //then return it as a list
             return query.ToList();
 
+        }
+
+        //Returns Action to particular weekNumber
+        public IActionResult RedirectToWeek(int weekNumber)
+        {
+            if (weekNumber == 1)
+            {
+                return RedirectToAction("Week1", "Weeks");
+            }
+            if (weekNumber == 2)
+            {
+                return RedirectToAction("Week2", "Weeks");
+            }
+            if (weekNumber == 3)
+            {
+                return RedirectToAction("Week3", "Weeks");
+            }
+            if (weekNumber == 4)
+            {
+                return RedirectToAction("Week4", "Weeks");
+            }
+            if (weekNumber == 5)
+            {
+                return RedirectToAction("Week5", "Weeks");
+            }
+            if (weekNumber == 6)
+            {
+                return RedirectToAction("Week6", "Weeks");
+            }
+            if (weekNumber == 7)
+            {
+                return RedirectToAction("Week7", "Weeks");
+            }
+            if (weekNumber == 8)
+            {
+                return RedirectToAction("Week8", "Weeks");
+            }
+            if (weekNumber == 9)
+            {
+                return RedirectToAction("Week9", "Weeks");
+            }
+            if (weekNumber == 10)
+            {
+                return RedirectToAction("Week10", "Weeks");
+            }
+            if (weekNumber == 11)
+            {
+                return RedirectToAction("Week11", "Weeks");
+            }
+            else
+            {
+                return RedirectToAction("Week12", "Weeks");
+            }
         }
 
         #region API CALLS

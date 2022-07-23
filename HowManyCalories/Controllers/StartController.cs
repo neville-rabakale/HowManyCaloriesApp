@@ -54,26 +54,35 @@ namespace HowManyCalories.Controllers
                     }
 
                     //First we need to check if week exists in the db
-                    var weekfromDbExists = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
+                    var weekfromDbExists = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0);
                     // If not return week 1 with profile data
                     if(weekfromDbExists == null)
                     {
+                        //continue to first Week
                         return RedirectToWeek(week.WeekNumber + 1);
+
                     }
 
                     //Before we move forward we need to retrieve the weeks of this profile and 
                     //Return/Goto that particular week
                     var weekFromDb = _context.Weeks
-                       .Where(u => u.UserProfile.ApplicationUserId == claim.Value)
+                       .Where(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0)
                        .Select(u => u.WeekNumber)
                        .ToList();
 
 
-                    week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max());
-                    //   week.WeekNumber = weekFromDb.Max(); // need to get the week for the correct profileId
+                    week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == weekfromDbExists.UserProfile.Id);
 
-                    return RedirectToWeek((week.WeekNumber + 1));
-                    //We can also combine this action with the index action 
+                    if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+                    {
+                        //continue next Week
+                        return RedirectToWeek(week.WeekNumber + 1);
+                    }
+                    else
+                    {
+                        //Stay in current Week until completion
+                        return RedirectToWeek(week.WeekNumber);
+                    }
 
                 }               
 

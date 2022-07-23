@@ -1,4 +1,6 @@
-﻿namespace HowManyCalories.Utility
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace HowManyCalories.Utility
 {
     public static class SD
     {
@@ -7,4 +9,5 @@
         public const string Role_Admin = "Admin";
 
     }
+
 }
