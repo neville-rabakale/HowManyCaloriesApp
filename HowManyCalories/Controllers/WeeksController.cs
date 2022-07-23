@@ -836,10 +836,18 @@ namespace HowManyCalories.Controllers
                 .Where(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0)
                 .Select(u => u.WeekNumber)
                 .ToList();
+            //If there are no weeks in db, return week
+            if(MaxWeek.Count == 0)
+            {
+                return week;
+            }
+            else
+            {
+                // we need to pull week from db
+                var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == MaxWeek.Max() && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
+                return weekFromDb;
+            }
 
-            // we need to pull week from db
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == MaxWeek.Max() && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
-            return weekFromDb;
         }
 
         public Week WeekProfile(Week week)

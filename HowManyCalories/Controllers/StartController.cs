@@ -59,7 +59,7 @@ namespace HowManyCalories.Controllers
                     if(weekfromDbExists == null)
                     {
                         //continue to first Week
-                        return RedirectToWeek(week.WeekNumber + 1);
+                        return RedirectToWeek(1);
 
                     }
 
@@ -84,7 +84,7 @@ namespace HowManyCalories.Controllers
                         return RedirectToWeek(week.WeekNumber);
                     }
 
-                }               
+                }
 
             }
 
