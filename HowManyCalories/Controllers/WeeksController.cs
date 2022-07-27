@@ -733,19 +733,9 @@ namespace HowManyCalories.Controllers
         //Also allows for one check in to be entered at a time
         public IActionResult AllCheckedIn(Week week)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-            WeekProfile(week);
 
             //Get max week in db
-            var MaxWeek = _context.Weeks
-               .Where(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0)
-               .Select(u => u.WeekNumber)
-               .ToList();
-            var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == MaxWeek.Max() && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
-            weekFromDb.CheckIn1 = week.CheckIn1;
-            weekFromDb.CheckIn2 = week.CheckIn2;
-            weekFromDb.CheckIn3 = week.CheckIn3;
+            var weekFromDb = GetWeekFromDb(week);
 
             //check in 2 or 3 filled but not check in 1
             if (week.CheckIn1 == 0.0 && (week.CheckIn2 != 0.0 || week.CheckIn3 != 0.0))
