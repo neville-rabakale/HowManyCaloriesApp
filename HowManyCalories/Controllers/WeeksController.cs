@@ -87,7 +87,7 @@ namespace HowManyCalories.Controllers
             var weekFromDb = GetWeekFromDb(week);
 
             //check if week2 has been added to db
-            if (weekFromDb == null)
+            if (weekFromDb.WeekNumber == 0)
             {
                 _context.Weeks.Add(week);
                 _context.SaveChanges();
