@@ -47,8 +47,8 @@ namespace HowManyCalories.Controllers
             {
                 week.UserProfileId = weekFromDb.UserProfile.Id;
                 week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-                week.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week.AverageWeight, 0); //still 0
-                week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+                week.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week.AverageWeight, weekFromDb);
+                week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
                 week.CurrentCalories = weekFromDb.WeeklyCalories;
                 week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
                 week.CheckIn1 = weekFromDb.CheckIn1;
@@ -60,7 +60,7 @@ namespace HowManyCalories.Controllers
             if (weekFromDb.WeekNumber == 0)
             {
                 week.UserProfileId = week.UserProfile.Id;
-                week.WeeklyLoss = WeeklyLoss(week.UserProfile.StartWeight, week.UserProfile.StartWeight, 0); 
+                week.WeeklyLoss = WeeklyLoss(week.UserProfile.StartWeight, week.UserProfile.StartWeight, weekFromDb); 
                 week.ExpectedWeight = week.UserProfile.StartWeight;
                 week.AverageWeight = week.UserProfile.StartWeight;
                 week.CurrentCalories = week.UserProfile.StartCalories;
@@ -110,7 +110,6 @@ namespace HowManyCalories.Controllers
             }
 
         }
-
 
         //Week 2 Get
         public IActionResult Week2()
@@ -760,6 +759,9 @@ namespace HowManyCalories.Controllers
             if (week.CheckIn1 != 0.0 && week.CheckIn2 == 0.0 & week.CheckIn3 == 0.0)
             {
                 TempData["Success"] = "Check 1 Complted Successfully";
+                weekFromDb.CheckIn1 = week.CheckIn1;
+                weekFromDb.CheckIn2 = week.CheckIn2;
+                weekFromDb.CheckIn3 = week.CheckIn3;
                 _context.Weeks.Update(weekFromDb);
                 _context.SaveChanges();
                 return RedirectToWeek(week.WeekNumber);
@@ -769,6 +771,9 @@ namespace HowManyCalories.Controllers
             if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 == 0.0)
             {
                 TempData["Success"] = "Check 2 Complted Successfully";
+                weekFromDb.CheckIn1 = week.CheckIn1;
+                weekFromDb.CheckIn2 = week.CheckIn2;
+                weekFromDb.CheckIn3 = week.CheckIn3;
                 _context.Weeks.Update(weekFromDb);
                 _context.SaveChanges();
                 return RedirectToWeek(week.WeekNumber);
@@ -777,6 +782,9 @@ namespace HowManyCalories.Controllers
             //all check ins filled
             if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
             {
+                weekFromDb.CheckIn1 = week.CheckIn1;
+                weekFromDb.CheckIn2 = week.CheckIn2;
+                weekFromDb.CheckIn3 = week.CheckIn3;
                 _context.Weeks.Update(weekFromDb);
                 _context.SaveChanges();
                 return RedirectToWeek(week.WeekNumber+1);
@@ -791,8 +799,8 @@ namespace HowManyCalories.Controllers
         {
             week.UserProfileId = weekFromDb.UserProfile.Id;
             week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-            week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb.WeeklyLoss);
-            week.ExpectedWeight = ExpectedLoss(weekFromDb.AverageWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+            week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
+            week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, (weekFromDb.WeekNumber + 1));
             week.CurrentCalories = weekFromDb.WeeklyCalories;
             week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
             week.CheckIn1 = 0.0;
@@ -806,8 +814,8 @@ namespace HowManyCalories.Controllers
         {
             week.UserProfileId = weekFromDb.UserProfile.Id;
             week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
-            week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb.WeeklyLoss);
-            week.ExpectedWeight = ExpectedLoss(weekFromDb.AverageWeight, weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration);
+            week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
+            week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
             week.CurrentCalories = weekFromDb.WeeklyCalories;
             week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
             week.CheckIn1 = weekFromDb.CheckIn1;
@@ -835,6 +843,36 @@ namespace HowManyCalories.Controllers
             {
                 // we need to pull week from db
                 var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == MaxWeek.Max() && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
+                return weekFromDb;
+            }
+
+        }
+        //get previous week from db
+        public Week GetPrevWeekFromDb(Week week)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            var MaxWeek = _context.Weeks
+                .Where(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0)
+                .Select(u => u.WeekNumber)
+                .ToList();
+            //If there are no weeks in db, return week
+            if (MaxWeek.Count == 0)
+            {
+                return week;
+            }
+            if(MaxWeek.Count == 1)
+            {
+                var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == (MaxWeek.Max()) && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
+                return weekFromDb;
+
+            }
+            else
+            {
+                // we need to pull week from db
+                var weekFromDb = GetFirstOrDefaultWeek(u => u.WeekNumber == (MaxWeek.Max() - 1) && u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Id == week.UserProfile.Id);
+
                 return weekFromDb;
             }
 
@@ -895,20 +933,31 @@ namespace HowManyCalories.Controllers
         }
 
         //How much did you actually lose in total
-        double WeeklyLoss( double previous, double current, double total)
-        {   
-            var currentLoss = previous - current;
+        double WeeklyLoss( double previous, double current, Week week)
+        {
+            double currentLoss;
+            var weekFromDb = GetPrevWeekFromDb(week);
+            var total = weekFromDb.WeeklyLoss; 
+            //Week 1
+            if (weekFromDb.WeekNumber == 0)
+            {
+                currentLoss = previous - current;
+                return Math.Round(currentLoss, 2);
+            }
+
+            //The rest of the Weeks
+            currentLoss = weekFromDb.AverageWeight - current;
             currentLoss += total;
 
             return Math.Round(currentLoss, 2);
         }
 
         //Calculate Weekly expected weight loss
-        double ExpectedLoss( double current, double startWeight, double goalWeight, double time)
+        double ExpectedLoss( double startWeight, double goalWeight, double time, double theWeek)
         {
             var totalLoss = startWeight - goalWeight;
-            var weeklyLoss = totalLoss / (time - 1);
-            var expectedLoss = current - weeklyLoss;
+            var weeklyLoss = totalLoss / time;
+            var expectedLoss = startWeight - (weeklyLoss * theWeek);
             return Math.Round(expectedLoss,2);
 
         }
@@ -927,10 +976,31 @@ namespace HowManyCalories.Controllers
             //else do nothing
         }
 
-        //calculate average weight -- TODO update for instances where only 1 or 2 values are inputted --
+        //calculate average weekly weight
         double AverageCheckinWeight(double checkIn1, double checkIn2, double checkIn3)
         {
-            double avg = ((checkIn1 + checkIn2 + checkIn3) / 3);
+            double avg;
+
+            if (checkIn1 == 0 && checkIn2 == 0 && checkIn3 == 0)
+            {
+                avg = 0.0;
+                return Math.Round(avg, 2);
+            }
+            if (checkIn1 != 0 && checkIn2 == 0 && checkIn3 == 0)
+            {
+                avg = checkIn1;
+                return Math.Round(avg, 2);
+            }
+            if (checkIn1 != 0 && checkIn2 != 0 && checkIn3 == 0)
+            {
+                avg = ((checkIn1 + checkIn2) / 2);
+                return Math.Round(avg, 2);
+            }
+            else
+            {
+                avg = ((checkIn1 + checkIn2 + checkIn3) / 3);
+            }
+
             return Math.Round(avg,2);
         }
 
