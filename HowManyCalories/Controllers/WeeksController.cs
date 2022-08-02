@@ -813,14 +813,14 @@ namespace HowManyCalories.Controllers
         public Week NewUpdated(Week week, Week weekFromDb)
         {
             week.UserProfileId = weekFromDb.UserProfile.Id;
+            week.CheckIn1 = weekFromDb.CheckIn1;
+            week.CheckIn2 = weekFromDb.CheckIn2;
+            week.CheckIn3 = weekFromDb.CheckIn3;
             week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
             week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
             week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
             week.CurrentCalories = weekFromDb.WeeklyCalories;
-            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories, weekFromDb);
-            week.CheckIn1 = weekFromDb.CheckIn1;
-            week.CheckIn2 = weekFromDb.CheckIn2;
-            week.CheckIn3 = weekFromDb.CheckIn3;
+            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, week.AverageWeight, weekFromDb.WeeklyCalories, weekFromDb);
             week.WeekNumber = weekFromDb.WeekNumber;
             return week;
         }
@@ -985,7 +985,7 @@ namespace HowManyCalories.Controllers
                 return Math.Round(weeklycalories);
             }
             //if average weight < 2% of your expected weight
-            if( averageWeight < (expectedWeight + (expectedWeight * 0.02)))
+            if( averageWeight < (expectedWeight - (expectedWeight * 0.02)))
             {
                 //add calories by 10%
                 var weeklycalories = (calories + (calories * 0.1));
