@@ -50,7 +50,7 @@ namespace HowManyCalories.Controllers
                 week.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week.AverageWeight, weekFromDb);
                 week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
                 week.CurrentCalories = weekFromDb.WeeklyCalories;
-                week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+                week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories, weekFromDb);
                 week.CheckIn1 = weekFromDb.CheckIn1;
                 week.CheckIn2 = weekFromDb.CheckIn2;
                 week.CheckIn3 = weekFromDb.CheckIn3;
@@ -802,7 +802,7 @@ namespace HowManyCalories.Controllers
             week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
             week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, (weekFromDb.WeekNumber + 1));
             week.CurrentCalories = weekFromDb.WeeklyCalories;
-            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+            week.WeeklyCalories = weekFromDb.WeeklyCalories;
             week.CheckIn1 = 0.0;
             week.CheckIn2 = 0.0;
             week.CheckIn3 = 0.0;
@@ -817,7 +817,7 @@ namespace HowManyCalories.Controllers
             week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
             week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
             week.CurrentCalories = weekFromDb.WeeklyCalories;
-            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories);
+            week.WeeklyCalories = WeeklyCal(weekFromDb.ExpectedWeight, weekFromDb.AverageWeight, weekFromDb.WeeklyCalories, weekFromDb);
             week.CheckIn1 = weekFromDb.CheckIn1;
             week.CheckIn2 = weekFromDb.CheckIn2;
             week.CheckIn3 = weekFromDb.CheckIn3;
@@ -963,16 +963,35 @@ namespace HowManyCalories.Controllers
         }
 
         //calculate weekly calories
-        double WeeklyCal(double expectedWeight, double averageWeight, double calories)
+        double WeeklyCal(double expectedWeight, double averageWeight, double calories, Week week)
         {
-            //if averge weight <= 2% of your expected weight
-            if((averageWeight - expectedWeight) >= (expectedWeight * 0.02))
+
+            if( week.CheckIn1 == 0 && week.CheckIn2 == 0 && week.CheckIn3 == 0)
+            {
+                return Math.Round(calories);
+            }
+            //if averge weight >= 2% of your expected weight
+            if(averageWeight >= ( expectedWeight + ( expectedWeight * 0.02 ) ))
             {
                 //subtract calories by 10%
                 var weeklycalories = (calories - (calories * 0.1));
-                return weeklycalories;
+                return Math.Round(weeklycalories);
+            } 
+            //if averge weight >= 2.2% of your expected weight
+            if (averageWeight >= (expectedWeight + (expectedWeight * 0.022)))
+            {
+                //subtract calories by 20%
+                var weeklycalories = (calories - (calories * 0.2));
+                return Math.Round(weeklycalories);
             }
-            return Math.Round(calories,2);
+            //if average weight < 2% of your expected weight
+            if( averageWeight < (expectedWeight + (expectedWeight * 0.02)))
+            {
+                //add calories by 10%
+                var weeklycalories = (calories + (calories * 0.1));
+                return Math.Round(weeklycalories);
+            }
+            return Math.Round(calories);
             //else do nothing
         }
 

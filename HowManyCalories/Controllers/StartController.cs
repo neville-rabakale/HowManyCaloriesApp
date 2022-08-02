@@ -149,9 +149,11 @@ namespace HowManyCalories.Controllers
             //Before we start, we need to check if the goal is realisitc
             //Check if the weight loss is less than 1% body weight per week
             var weeklyLoss = (profile.StartWeight - profile.GoalWeight) / (profile.Duration);
-            if(weeklyLoss > (profile.GoalWeight * 0.01))
+            if(weeklyLoss > 1 || weeklyLoss < 0.5)
             {
-                TempData["error"] = "You are restricted to losing 1% of your body weight per week, Please increase your duration or decrease your goal weight";
+                TempData["error"] = "For optimum weight loss, your weight loss goal should be losing between 0.5% and 1% of your body weight per week, " +
+                    "Please adjust your duration or your goal weight accordingly. Your current weekly goal is" + Math.Round(weeklyLoss,2).ToString();
+
                 return RedirectToAction("Index");
             }
             //Add inputed userdata to Db and Save
