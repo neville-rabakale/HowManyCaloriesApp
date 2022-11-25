@@ -114,16 +114,32 @@ namespace HowManyCalories.Controllers
         //Week 2 Get
         public IActionResult Week2()
         {
+            int weekNum = 2;
+            try
+            {
+                return GetWeekAction(weekNum);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Something went wrong{e}");
+            }
+            return RedirectToWeek(weekNum);
+        }
+
+
+        //Get week Action that takes current week number as parameter and returns current week action
+        public IActionResult GetWeekAction(int currentWeek)
+        {
             Week week = CreateWeek();
             WeekProfile(week);
             //Get Week from db
             var weekFromDb = GetWeekFromDb(week);
             //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 2)
+            if (weekFromDb.WeekNumber == currentWeek)
             {
                 NewUpdated(week, weekFromDb);
             }
-            if (weekFromDb.WeekNumber == 1)
+            if (weekFromDb.WeekNumber == currentWeek - 1)
             {
                 NewWeek(week, weekFromDb);
             }
@@ -167,21 +183,16 @@ namespace HowManyCalories.Controllers
         //Week 3 Get
         public IActionResult Week3()
         {
-
-            Week week3 = CreateWeek();
-            WeekProfile(week3);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week3);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 3)
+            int weekNum = 3;
+            try
             {
-                NewUpdated(week3, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if(weekFromDb.WeekNumber == 2)
+            catch (Exception e)
             {
-                NewWeek(week3, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week3);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -222,20 +233,16 @@ namespace HowManyCalories.Controllers
         //Week 4 Get
         public IActionResult Week4()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 4)
+            int weekNum = 4;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 3)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -274,20 +281,16 @@ namespace HowManyCalories.Controllers
         //Week 5 Get
         public IActionResult Week5()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 5)
+            int weekNum = 5;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 4)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -325,20 +328,16 @@ namespace HowManyCalories.Controllers
         //Week 6 Get
         public IActionResult Week6()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 6)
+            int weekNum = 6;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 5)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
 
@@ -398,20 +397,16 @@ namespace HowManyCalories.Controllers
         //Week 7 Get
         public IActionResult Week7()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 7)
+            int weekNum = 7;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 6)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -449,20 +444,16 @@ namespace HowManyCalories.Controllers
         //Week 8 Get
         public IActionResult Week8()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 8)
+            int weekNum = 8;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 7)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -518,20 +509,16 @@ namespace HowManyCalories.Controllers
         //Week 9 Get
         public IActionResult Week9()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 9)
+            int weekNum = 9;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 8)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -569,20 +556,16 @@ namespace HowManyCalories.Controllers
         //Week 10 Get
         public IActionResult Week10()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 10)
+            int weekNum = 10;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 9)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -620,20 +603,16 @@ namespace HowManyCalories.Controllers
         //Week 11 Get
         public IActionResult Week11()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 11)
+            int weekNum = 11;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 10)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]
@@ -671,20 +650,16 @@ namespace HowManyCalories.Controllers
         //Week 12 Get
         public IActionResult Week12()
         {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == 12)
+            int weekNum = 12;
+            try
             {
-                NewUpdated(week, weekFromDb);
+                return GetWeekAction(weekNum);
             }
-            if (weekFromDb.WeekNumber == 11)
+            catch (Exception e)
             {
-                NewWeek(week, weekFromDb);
+                Console.WriteLine($"Something went wrong{e}");
             }
-            return View(week);
+            return RedirectToWeek(weekNum);
         }
 
         [HttpPost]

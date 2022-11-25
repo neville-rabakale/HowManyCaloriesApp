@@ -18,15 +18,13 @@ namespace HowManyCalories.Controllers
         }
         public IActionResult Index()
         {
-            UserProfile profile = new();
-
-            return View(profile);
+            return View(new UserProfile());
         }
 
+
         [Authorize]
-        public IActionResult Continue()
+        public IActionResult Continue(UserProfile uProfile)
         {
-            UserProfile uProfile = new();
             Week week = new();
 
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -39,14 +37,11 @@ namespace HowManyCalories.Controllers
                 if(profileFromDb.Count() >= 1)
                 {
                     //If yes, get the largest id in the UserProfileId row -- Can turn this into a function called GetProfileId --
-                    var profileIds = _context.UserProfiles
-                        .Where(u => u.ApplicationUserId == claim.Value)
-                        .Select(u => u.Id)
-                        .ToList();
-                    uProfile = GetFirstOrDefaultProfile(u=> u.Id == profileIds.Max());
+
+                    uProfile = GetUserProfile(uProfile, claim);
 
                     //We need to check if the profile is not yet complete -> Duration = 0
-                    if( uProfile.Duration == 0)
+                    if ( uProfile.Duration == 0)
                     {
                         TempData["success"] = "You have already completed your weight loss program";
                         //If complete, go to summary
@@ -108,11 +103,7 @@ namespace HowManyCalories.Controllers
                 if (profileFromDb.Count() >= 1)
                 {
                     //If yes, get the largest id in the UserProfileId row -- Can turn this into a function called GetProfileId --
-                    var profileIds = _context.UserProfiles
-                        .Where(u => u.ApplicationUserId == claim.Value)
-                        .Select(u => u.Id)
-                        .ToList();
-                    var uProfile = GetFirstOrDefaultProfile(u => u.Id == profileIds.Max());
+                    var uProfile = GetUserProfile(profile, claim);
                     if (uProfile.Duration != 0)
                     {
                         //Before we move forward we need to retrieve the weeks of this profile and 
@@ -164,11 +155,20 @@ namespace HowManyCalories.Controllers
 
         }
 
+        //fuction to get profile using claimsId, need to update -- Unsused so far
+        public UserProfile GetUserProfile(UserProfile profile, Claim claim)
+        {
+            var profileIds = _context.UserProfiles
+                .Where(u => u.ApplicationUserId == claim.Value)
+                .Select(u => u.Id)
+                .ToList();
+            return profile = GetFirstOrDefaultProfile(u => u.Id == profileIds.Max());
+        }
+
 
         //GetAll Query for UserProfiles
         public IEnumerable<UserProfile> GetAllProfiles(Expression<Func<UserProfile, bool>>? filter = null, string? includeProperties = null)
         {
-
             //First we need to query the db
             IQueryable<UserProfile> query = _context.UserProfiles;
             if (filter != null)
@@ -202,10 +202,8 @@ namespace HowManyCalories.Controllers
                 {
                     //include all the propery results to the query
                     query = query.Include(property);
-
                 }
             }
-
             //then return it as a list
             return query.FirstOrDefault();
         }
