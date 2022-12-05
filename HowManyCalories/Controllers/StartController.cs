@@ -68,7 +68,7 @@ namespace HowManyCalories.Controllers
 
                     week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == weekfromDbExists.UserProfile.Id);
 
-                    if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+                    if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
                     {
                         //continue next Week
                         return RedirectToWeek(week.WeekNumber + 1);

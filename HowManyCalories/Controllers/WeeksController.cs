@@ -46,7 +46,7 @@ namespace HowManyCalories.Controllers
             if (weekFromDb.WeekNumber == 1)
             {
                 week.UserProfileId = weekFromDb.UserProfile.Id;
-                week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+                week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3, weekFromDb.CheckIn4, weekFromDb.CheckIn5);
                 week.WeeklyLoss = WeeklyLoss(weekFromDb.UserProfile.StartWeight, week.AverageWeight, weekFromDb);
                 week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
                 week.CurrentCalories = weekFromDb.WeeklyCalories;
@@ -54,6 +54,8 @@ namespace HowManyCalories.Controllers
                 week.CheckIn1 = weekFromDb.CheckIn1;
                 week.CheckIn2 = weekFromDb.CheckIn2;
                 week.CheckIn3 = weekFromDb.CheckIn3;
+                week.CheckIn4 = weekFromDb.CheckIn4;
+                week.CheckIn5 = weekFromDb.CheckIn5;
                 week.WeekNumber = weekFromDb.WeekNumber;
                 return View(week);
             }
@@ -69,6 +71,8 @@ namespace HowManyCalories.Controllers
                 week.CheckIn1 = 0.0;
                 week.CheckIn2 = 0.0;
                 week.CheckIn3 = 0.0;
+                week.CheckIn4 = 0.0;
+                week.CheckIn5 = 0.0;
                 week.WeekNumber = week.WeekNumber += 1;
                 return View(week);
             }
@@ -773,7 +777,7 @@ namespace HowManyCalories.Controllers
         public Week NewWeek(Week week, Week weekFromDb)
         {
             week.UserProfileId = weekFromDb.UserProfile.Id;
-            week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+            week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3, weekFromDb.CheckIn4, weekFromDb.CheckIn5);
             week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
             week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, (weekFromDb.WeekNumber + 1));
             week.CurrentCalories = weekFromDb.WeeklyCalories;
@@ -781,6 +785,8 @@ namespace HowManyCalories.Controllers
             week.CheckIn1 = 0.0;
             week.CheckIn2 = 0.0;
             week.CheckIn3 = 0.0;
+            week.CheckIn4 = 0.0;
+            week.CheckIn5 = 0.0;
             week.WeekNumber = weekFromDb.WeekNumber += 1;
             return week;
         }
@@ -791,7 +797,9 @@ namespace HowManyCalories.Controllers
             week.CheckIn1 = weekFromDb.CheckIn1;
             week.CheckIn2 = weekFromDb.CheckIn2;
             week.CheckIn3 = weekFromDb.CheckIn3;
-            week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3);
+            week.CheckIn4 = weekFromDb.CheckIn4;
+            week.CheckIn5 = weekFromDb.CheckIn5;
+            week.AverageWeight = AverageCheckinWeight(weekFromDb.CheckIn1, weekFromDb.CheckIn2, weekFromDb.CheckIn3, weekFromDb.CheckIn4, weekFromDb.CheckIn5);
             week.WeeklyLoss = WeeklyLoss(weekFromDb.AverageWeight, week.AverageWeight, weekFromDb);
             week.ExpectedWeight = ExpectedLoss(weekFromDb.UserProfile.StartWeight, weekFromDb.UserProfile.GoalWeight, weekFromDb.UserProfile.Duration, weekFromDb.WeekNumber);
             week.CurrentCalories = weekFromDb.WeeklyCalories;
@@ -971,31 +979,41 @@ namespace HowManyCalories.Controllers
         }
 
         //calculate average weekly weight
-        double AverageCheckinWeight(double checkIn1, double checkIn2, double checkIn3)
+        double AverageCheckinWeight(double checkIn1, double checkIn2, double checkIn3, double checkIn4, double checkIn5)
         {
             double avg;
 
-            if (checkIn1 == 0 && checkIn2 == 0 && checkIn3 == 0)
+            if (checkIn1 == 0 && checkIn2 == 0 && checkIn3 == 0 && checkIn4 == 0 && checkIn5 == 0)
             {
                 avg = 0.0;
                 return Math.Round(avg, 2);
             }
-            if (checkIn1 != 0 && checkIn2 == 0 && checkIn3 == 0)
+            if (checkIn1 != 0 && checkIn2 == 0 && checkIn3 == 0 && checkIn4 == 0 && checkIn5 == 0)
             {
                 avg = checkIn1;
                 return Math.Round(avg, 2);
             }
-            if (checkIn1 != 0 && checkIn2 != 0 && checkIn3 == 0)
+            if (checkIn1 != 0 && checkIn2 != 0 && checkIn3 == 0 && checkIn4 == 0 && checkIn5 == 0)
             {
                 avg = ((checkIn1 + checkIn2) / 2);
                 return Math.Round(avg, 2);
             }
-            else
+            if (checkIn1 != 0 && checkIn2 != 0 && checkIn3 != 0 && checkIn4 == 0 && checkIn5 == 0)
             {
                 avg = ((checkIn1 + checkIn2 + checkIn3) / 3);
+                return Math.Round(avg, 2);
             }
-
+            if (checkIn1 != 0 && checkIn2 != 0 && checkIn3 != 0 && checkIn4 != 0 && checkIn5 == 0)
+            {
+                avg = ((checkIn1 + checkIn2 + checkIn3 + checkIn4) / 4);
+                return Math.Round(avg, 2);
+            }
+            else
+            {
+                avg = ((checkIn1 + checkIn2 + checkIn3 + checkIn4 + checkIn5) / 5);
+            }
             return Math.Round(avg,2);
+
         }
 
         //Get Item for Weeks Query based on a condition
