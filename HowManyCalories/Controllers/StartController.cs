@@ -20,7 +20,7 @@ namespace HowManyCalories.Controllers
         {
             return View(new UserProfile());
         }
-
+            
 
         [Authorize]
         public IActionResult Continue(UserProfile uProfile)

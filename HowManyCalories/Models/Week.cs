@@ -29,6 +29,12 @@ namespace HowManyCalories.Models
         [Required]
         [Display(Name = "Check in 3")]
         public double CheckIn3 { get; set; }
+        [Required]
+        [Display(Name = "Check in 4")]
+        public double CheckIn4 { get; set; }
+        [Required]
+        [Display(Name = "Check in 5")]
+        public double CheckIn5 { get; set; }
         public int UserProfileId { get; set; }
         [ForeignKey("UserProfileId")]
         [ValidateNever]
