@@ -100,8 +100,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 5
                 TempData["Success"] = "Week 2 Completed Successfully";
@@ -131,24 +131,6 @@ namespace HowManyCalories.Controllers
         }
 
 
-        //Get week Action that takes current week number as parameter and returns current week action
-        public IActionResult GetWeekAction(int currentWeek)
-        {
-            Week week = CreateWeek();
-            WeekProfile(week);
-            //Get Week from db
-            var weekFromDb = GetWeekFromDb(week);
-            //and make sure we pull the correct week record
-            if (weekFromDb.WeekNumber == currentWeek)
-            {
-                NewUpdated(week, weekFromDb);
-            }
-            if (weekFromDb.WeekNumber == currentWeek - 1)
-            {
-                NewWeek(week, weekFromDb);
-            }
-            return View(week);
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -169,8 +151,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 5
                 TempData["Success"] = "Week 2 Completed Successfully";
@@ -219,8 +201,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 4
                 TempData["Success"] = "Week 3 Completed Successfully";
@@ -268,8 +250,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 5
                 TempData["Success"] = "Week 4 Completed Successfully";
@@ -315,8 +297,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 5
                 TempData["Success"] = "Week 5 Completed Successfully";
@@ -367,8 +349,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //check if duration of diet is 6 weeks, if so goto summary else continue
                 if (userProfile.Duration == 6 && week.WeekNumber == 6)
@@ -431,8 +413,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 8
                 TempData["Success"] = "Week 7 Completed Successfully";
@@ -482,8 +464,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //check if duration of diet is 6 weeks, if so goto summary else continue
                 if (userProfile.Duration == 8 && week.WeekNumber == 8)
@@ -543,8 +525,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 10
                 TempData["Success"] = "Week 9 Completed Successfully";
@@ -590,8 +572,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 11
                 TempData["Success"] = "Week 10 Completed Successfully";
@@ -637,8 +619,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //continue to Week 12
                 TempData["Success"] = "Week 11 Completed Successfully";
@@ -689,8 +671,8 @@ namespace HowManyCalories.Controllers
 
             AllCheckedIn(week);
 
-            //Check if all3 checkins are complete before moving on to the next week
-            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0)
+            //Check if all5 checkins are complete before moving on to the next week
+            if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
             {
                 //Set Duration to 0 -> End of program
                 userProfile.Duration = 0;
@@ -707,6 +689,25 @@ namespace HowManyCalories.Controllers
 
         }
 
+
+        //Get week Action that takes current week number as parameter and returns current week action
+        public IActionResult GetWeekAction(int currentWeek)
+        {
+            Week week = CreateWeek();
+            WeekProfile(week);
+            //Get Week from db
+            var weekFromDb = GetWeekFromDb(week);
+            //and make sure we pull the correct week record
+            if (weekFromDb.WeekNumber == currentWeek)
+            {
+                NewUpdated(week, weekFromDb);
+            }
+            if (weekFromDb.WeekNumber == currentWeek - 1)
+            {
+                NewWeek(week, weekFromDb);
+            }
+            return View(week);
+        }
         //Function to check if Checkins were entered correctly
         //Also allows for one check in to be entered at a time
         public IActionResult AllCheckedIn(Week week)
