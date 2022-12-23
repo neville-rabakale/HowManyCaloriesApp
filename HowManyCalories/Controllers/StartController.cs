@@ -11,10 +11,12 @@ namespace HowManyCalories.Controllers
     public class StartController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly DataServices services;
 
-        public StartController(ApplicationDbContext context)
+        public StartController(ApplicationDbContext context, DataServices services)
         {
             _context = context;
+            this.services = services;
         }
         public IActionResult Index()
         {
@@ -30,7 +32,7 @@ namespace HowManyCalories.Controllers
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
+            var profileFromDb = services.GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
             //Check if there are multiple UserProfile Id's for this User
             if(profileFromDb != null)
             {
@@ -38,7 +40,7 @@ namespace HowManyCalories.Controllers
                 {
                     //If yes, get the largest id in the UserProfileId row -- Can turn this into a function called GetProfileId --
 
-                    uProfile = GetUserProfile(uProfile, claim);
+                    uProfile = services.GetUserProfile(uProfile, claim);
 
                     //We need to check if the profile is not yet complete -> Duration = 0
                     if ( uProfile.Duration == 0)
@@ -49,7 +51,7 @@ namespace HowManyCalories.Controllers
                     }
 
                     //First we need to check if week exists in the db
-                    var weekfromDbExists = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0);
+                    var weekfromDbExists = services.GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.UserProfile.Duration != 0);
                     // If not return week 1 with profile data
                     if(weekfromDbExists == null)
                     {
@@ -66,7 +68,7 @@ namespace HowManyCalories.Controllers
                        .ToList();
 
 
-                    week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == weekfromDbExists.UserProfile.Id);
+                    week = services.GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == weekfromDbExists.UserProfile.Id);
 
                     if (week.CheckIn1 != 0.0 && week.CheckIn2 != 0.0 && week.CheckIn3 != 0.0 && week.CheckIn4 != 0.0 && week.CheckIn5 != 0.0)
                     {
@@ -96,14 +98,14 @@ namespace HowManyCalories.Controllers
             Week week = new();
             profile.ApplicationUserId = claim.Value;
 
-            var profileFromDb = GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
+            var profileFromDb = services.GetAllProfiles(u => u.ApplicationUserId == claim.Value, includeProperties: "ApplicationUser");
             //Check if there are multiple UserProfile Id's for this User
             if (profileFromDb != null)
             {
                 if (profileFromDb.Count() >= 1)
                 {
                     //If yes, get the largest id in the UserProfileId row -- Can turn this into a function called GetProfileId --
-                    var uProfile = GetUserProfile(profile, claim);
+                    var uProfile = services.GetUserProfile(profile, claim);
                     if (uProfile.Duration != 0)
                     {
                         //Before we move forward we need to retrieve the weeks of this profile and 
@@ -114,7 +116,7 @@ namespace HowManyCalories.Controllers
                            .ToList();
 
                         //First we need to check if week exists in the db
-                        var weekfromDbExists = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
+                        var weekfromDbExists = services.GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value);
                         // If not return week 1 with profile data
                         if (weekfromDbExists == null)
                         {
@@ -123,12 +125,11 @@ namespace HowManyCalories.Controllers
                         }
 
                         // need to get the week for the correct profileId
-                        week = GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == uProfile.Id);
+                        week = services.GetFirstOrDefaultWeek(u => u.UserProfile.ApplicationUserId == claim.Value && u.WeekNumber == weekFromDb.Max() && u.UserProfile.Id == uProfile.Id);
                         
                         TempData["error"] = "Please complete current weight loss program before starting a new one";
                         return RedirectToWeek((week.WeekNumber + 1));
                     }
-                    //Create profile here if this doesnt work
                 }
             }
             //We need to check that the target is < the start weight
@@ -155,79 +156,7 @@ namespace HowManyCalories.Controllers
 
         }
 
-        //fuction to get profile using claimsId, need to update -- Unsused so far
-        public UserProfile GetUserProfile(UserProfile profile, Claim claim)
-        {
-            var profileIds = _context.UserProfiles
-                .Where(u => u.ApplicationUserId == claim.Value)
-                .Select(u => u.Id)
-                .ToList();
-            return profile = GetFirstOrDefaultProfile(u => u.Id == profileIds.Max());
-        }
-
-
-        //GetAll Query for UserProfiles
-        public IEnumerable<UserProfile> GetAllProfiles(Expression<Func<UserProfile, bool>>? filter = null, string? includeProperties = null)
-        {
-            //First we need to query the db
-            IQueryable<UserProfile> query = _context.UserProfiles;
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-            if (includeProperties != null)
-            {
-                //first split "includeProperties" by ','
-                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    //include all the propery results to the query
-                    query = query.Include(property);
-
-                }
-            }
-            //then return it as a list
-            return query.ToList();
-
-        }
-        //Get Item for Weeks Query based on a condition
-        public UserProfile GetFirstOrDefaultProfile(Expression<Func<UserProfile, bool>> filter, string? includeProperties = null)
-        {
-            //First we need to query the db
-            IQueryable<UserProfile> query = _context.UserProfiles;
-            query = query.Where(filter);
-            if (includeProperties != null)
-            {
-                //first split "includeProperties" by ','
-                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    //include all the propery results to the query
-                    query = query.Include(property);
-                }
-            }
-            //then return it as a list
-            return query.FirstOrDefault();
-        }
-
-        //Get Item for Weeks Query based on a condition
-        public Week GetFirstOrDefaultWeek(Expression<Func<Week, bool>> filter, string? includeProperties = null)
-        {
-            //First we need to query the db
-            IQueryable<Week> query = _context.Weeks;
-            query = query.Where(filter);
-            if (includeProperties != null)
-            {
-                //first split "includeProperties" by ','
-                foreach (var property in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    //include all the propery results to the query
-                    query = query.Include(property);
-
-                }
-            }
-
-            //then return it as a list
-            return query.FirstOrDefault();
-        }
+    
         //Returns Action to particular weekNumber
         public IActionResult RedirectToWeek(int weekNumber)
         {
